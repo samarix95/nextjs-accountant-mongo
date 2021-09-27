@@ -7,27 +7,112 @@ import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
+import ListItemButton from '@mui/material/ListItemButton';
 import MailIcon from '@mui/icons-material/Mail';
 import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+import Avatar from '@mui/material/Avatar';
+import Popper from '@mui/material/Popper';
+import Fade from '@mui/material/Fade';
+import Paper from '@mui/material/Paper';
+import ClickAwayListener from "@mui/material/ClickAwayListener";
+import Container from "@mui/material/Container";
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import Slide from '@mui/material/Slide';
+import TextField from '@mui/material/TextField';
+
+import InboxIcon from '@mui/icons-material/Inbox';
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import AddBoxIcon from '@mui/icons-material/AddBox';
+
+let cards = {
+    data: [
+        {
+            id: "001",
+            name: "Cash"
+        },
+        {
+            id: "002",
+            name: "Sberbank"
+        },
+        {
+            id: "003",
+            name: "Tinkoff"
+        }
+    ]
+}
 
 const drawerWidth = 240;
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="down" ref={ref} {...props} />;
+});
 
 const HeaderComponent = (props) => {
     const { window } = props;
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const [session, loading] = useSession()
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const [openPooper, setOpenPooper] = React.useState(false);
+    const [currentWallet, setCurrentWallet] = React.useState('all');
+    const [openBackdrop, setOpenBackdrop] = React.useState(false);
+    const [openDialog, setOpenDialog] = React.useState(false);
+    const [newWalletName, setNewWalletName] = React.useState(null);
 
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
     };
+
+    const handleOpenPooper = (event) => {
+        setAnchorEl(event.currentTarget);
+        setOpenPooper(!openPooper);
+    }
+
+    const handleClosePooper = () => {
+        setOpenPooper(false);
+    }
+
+    const handleChangeWallet = (wallet) => {
+        if (currentWallet !== wallet) {
+            setCurrentWallet(wallet);
+            setOpenPooper(false);
+            changeWallet();
+        }
+    };
+
+    const changeWallet = () => {
+        console.log(`Change wallet: ${newWalletName}`);
+    }
+
+    const handleAddWallet = () => {
+        setOpenPooper(false);
+        setOpenDialog(true);
+    }
+
+    const handleCloseDialog = () => {
+        setNewWalletName(null);
+        setOpenDialog(false);
+    };
+
+    const handleChangeNewWalletName = (event) => {
+        setNewWalletName(event.target.value);
+    }
+
+    const handleAddNewWallet = () => {
+        setOpenDialog(false);
+        console.log(`Post new wallet: ${newWalletName}`);
+    }
 
     if (loading) {
         return <p>Loading...</p>
@@ -65,6 +150,98 @@ const HeaderComponent = (props) => {
 
     return (
         <Box sx={{ flexGrow: 1, display: 'flex' }}>
+            <Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={openBackdrop}
+            >
+                <Box sx={{ p: 1 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                        <CircularProgress color="inherit" />
+                    </Box>
+                    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                        <Typography>Loading</Typography>
+                    </Box>
+                </Box>
+            </Backdrop>
+            <Dialog
+                open={openDialog}
+                TransitionComponent={Transition}
+                keepMounted
+                onClose={handleCloseDialog}
+                aria-describedby="alert-dialog-slide-description"
+            >
+                <DialogTitle>Add new wallet</DialogTitle>
+                <DialogContent>
+                    <TextField
+                        required
+                        id="wallet-name-field"
+                        label="Wallet name"
+                        size="small"
+                        variant="standard"
+                        onChange={handleChangeNewWalletName}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseDialog}>Cancel</Button>
+                    <Button onClick={handleAddNewWallet}>Add</Button>
+                </DialogActions>
+            </Dialog>
+            <Popper transition
+                open={openPooper}
+                anchorEl={anchorEl}
+                placement="bottom-end"
+                disablePortal
+                style={{ zIndex: 9999 }}
+            >
+                {({ TransitionProps }) => (
+                    <ClickAwayListener onClickAway={handleClosePooper}>
+                        <Fade {...TransitionProps} timeout={350}>
+                            <Paper>
+                                <Container>
+                                    <Box sx={{ p: 1 }}>
+                                        {session.user.name &&
+                                            <Typography variant="h6">{session.user.name} </Typography>
+                                        }
+                                        <Typography variant="body2" gutterBottom>{session.user.email} </Typography>
+                                    </Box>
+                                    <Divider />
+                                    <List component="nav" aria-label="main wallets folders">
+                                        <ListItemButton
+                                            selected={currentWallet === 'all'}
+                                            onClick={() => handleChangeWallet('all')}
+                                        >
+                                            <ListItemIcon>
+                                                <InboxIcon />
+                                            </ListItemIcon>
+                                            <ListItemText primary="All" />
+                                        </ListItemButton>
+                                        {cards.data.map((item, key) =>
+                                            <ListItemButton key={key}
+                                                selected={currentWallet === item.id}
+                                                onClick={() => handleChangeWallet(item.id)}
+                                            >
+                                                <ListItemIcon>
+                                                    <InboxIcon />
+                                                </ListItemIcon>
+                                                <ListItemText primary={item.name} />
+                                            </ListItemButton>
+                                        )}
+                                    </List>
+                                    <Box sx={{ p: 1, display: 'flex', justifyContent: 'center' }}>
+                                        <Button color="inherit" size="small" startIcon={<AddBoxIcon />} onClick={handleAddWallet}>
+                                            Add wallet
+                                        </Button>
+                                    </Box>
+                                    <Divider />
+                                    <Box sx={{ p: 1, display: 'flex', justifyContent: 'flex-end' }}>
+                                        <Button color="inherit" size="small" onClick={signOut}>Sign out</Button>
+                                    </Box>
+                                </Container>
+                            </Paper>
+                        </Fade>
+                    </ClickAwayListener>
+                )}
+            </Popper>
             <AppBar
                 position="fixed"
                 sx={{
@@ -89,10 +266,12 @@ const HeaderComponent = (props) => {
                         <Button color="inherit" onClick={signIn}>Login</Button>
                     )}
                     {session && (
-                        <>
-                            Signed in as {session.user.email} <br />
-                            <Button color="inherit" onClick={signOut}>Sign out</Button>
-                        </>
+                        <IconButton size="large" color="inherit" onClick={handleOpenPooper}>
+                            {session.user.image
+                                ? <Avatar src={session.user.image} />
+                                : <AccountCircle />
+                            }
+                        </IconButton>
                     )}
                 </Toolbar>
             </AppBar>
