@@ -1,6 +1,7 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import { signIn, signOut, useSession } from 'next-auth/client'
+import axios from 'axios';
 
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -36,23 +37,6 @@ import InboxIcon from '@mui/icons-material/Inbox';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 
-let cards = {
-    data: [
-        {
-            id: "001",
-            name: "Cash"
-        },
-        {
-            id: "002",
-            name: "Sberbank"
-        },
-        {
-            id: "003",
-            name: "Tinkoff"
-        }
-    ]
-}
-
 const drawerWidth = 240;
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -60,7 +44,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 const HeaderComponent = (props) => {
-    const { window } = props;
+    const { window, wallets } = props;
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const [session, loading] = useSession()
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -87,12 +71,12 @@ const HeaderComponent = (props) => {
         if (currentWallet !== wallet) {
             setCurrentWallet(wallet);
             setOpenPooper(false);
-            changeWallet();
+            changeWallet(wallet);
         }
     };
 
-    const changeWallet = () => {
-        console.log(`Change wallet: ${newWalletName}`);
+    const changeWallet = (wallet) => {
+        console.log(`Change wallet: ${wallet}`);
     }
 
     const handleAddWallet = () => {
@@ -110,8 +94,18 @@ const HeaderComponent = (props) => {
     }
 
     const handleAddNewWallet = () => {
-        setOpenDialog(false);
-        console.log(`Post new wallet: ${newWalletName}`);
+        axios.request({
+            method: "post",
+            url: "/api/wallet",
+            data: { "walletName": newWalletName },
+        })
+            .then(response => {
+                console.log(response.data.message)
+                setOpenDialog(false);
+            })
+            .catch(error => {
+                console.log(error.response.data.message)
+            });
     }
 
     if (loading) {
@@ -206,26 +200,36 @@ const HeaderComponent = (props) => {
                                     </Box>
                                     <Divider />
                                     <List component="nav" aria-label="main wallets folders">
-                                        <ListItemButton
-                                            selected={currentWallet === 'all'}
-                                            onClick={() => handleChangeWallet('all')}
-                                        >
-                                            <ListItemIcon>
-                                                <InboxIcon />
-                                            </ListItemIcon>
-                                            <ListItemText primary="All" />
-                                        </ListItemButton>
-                                        {cards.data.map((item, key) =>
-                                            <ListItemButton key={key}
-                                                selected={currentWallet === item.id}
-                                                onClick={() => handleChangeWallet(item.id)}
-                                            >
+                                        {Object.keys(wallets.data).length > 0
+                                            ? <React.Fragment>
+                                                <ListItemButton
+                                                    selected={currentWallet === 'all'}
+                                                    onClick={() => handleChangeWallet('all')}
+                                                >
+                                                    <ListItemIcon>
+                                                        <InboxIcon />
+                                                    </ListItemIcon>
+                                                    <ListItemText primary="All" />
+                                                </ListItemButton>
+                                                {wallets.data.map((item, key) =>
+                                                    <ListItemButton key={key}
+                                                        selected={currentWallet === item._id}
+                                                        onClick={() => handleChangeWallet(item._id)}
+                                                    >
+                                                        <ListItemIcon>
+                                                            <InboxIcon />
+                                                        </ListItemIcon>
+                                                        <ListItemText primary={item.name} />
+                                                    </ListItemButton>
+                                                )}
+                                            </React.Fragment>
+                                            : <ListItemButton disabled>
                                                 <ListItemIcon>
                                                     <InboxIcon />
                                                 </ListItemIcon>
-                                                <ListItemText primary={item.name} />
+                                                <ListItemText primary="No wallets" />
                                             </ListItemButton>
-                                        )}
+                                        }
                                     </List>
                                     <Box sx={{ p: 1, display: 'flex', justifyContent: 'center' }}>
                                         <Button color="inherit" size="small" startIcon={<AddBoxIcon />} onClick={handleAddWallet}>
@@ -318,6 +322,7 @@ const HeaderComponent = (props) => {
 HeaderComponent.propTypes = {
     children: PropTypes.node.isRequired,
     window: PropTypes.func,
+    wallets: PropTypes.object,
 };
 
 export default HeaderComponent;

@@ -36,6 +36,9 @@ const options = {
             }
             return Promise.resolve('/api/auth/signin')
         },
+        session: async (session, token) => {
+            return Promise.resolve({ ...session, user: { ...session.user, id: token.sub } })
+        }
     },
 }
 
