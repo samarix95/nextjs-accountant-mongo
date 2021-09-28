@@ -36,6 +36,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
 import TextField from '@mui/material/TextField';
+import Stack from '@mui/material/Stack';
 
 import InboxIcon from '@mui/icons-material/Inbox';
 import AccountCircle from '@mui/icons-material/AccountCircle';
@@ -60,6 +61,7 @@ const HeaderComponent = (props) => {
     const [openBackdrop, setOpenBackdrop] = React.useState(false);
     const [openDialog, setOpenDialog] = React.useState(false);
     const [newWalletName, setNewWalletName] = React.useState('');
+    const [newWalletDescribe, setNewWalletDescribe] = React.useState('');
     const [disableDialogButtons, setDisableDialogButtons] = React.useState(false);
 
     const dispatch = useDispatch();
@@ -99,12 +101,19 @@ const HeaderComponent = (props) => {
     }
 
     const handleCloseDialog = () => {
-        setNewWalletName('');
-        setOpenDialog(false);
+        if (!disableDialogButtons) {
+            setNewWalletName('');
+            setNewWalletDescribe('');
+            setOpenDialog(false);
+        }
     };
 
     const handleChangeNewWalletName = (event) => {
         setNewWalletName(event.target.value);
+    }
+
+    const handleChangeNewWalletDescribe = (event) => {
+        setNewWalletDescribe(event.target.value);
     }
 
     const handleAddNewWallet = () => {
@@ -112,11 +121,12 @@ const HeaderComponent = (props) => {
         axios.request({
             method: "post",
             url: "/api/wallet",
-            data: { "walletName": newWalletName },
+            data: { walletName: newWalletName, walletDescribe: newWalletDescribe },
         })
             .then(response => {
                 setDisableDialogButtons(false);
                 setNewWalletName('');
+                setNewWalletDescribe('');
                 dispatch(openSnackbar(true, response.data.message, "success"));
                 setOpenDialog(false);
                 dispatch(getUserWallets());
@@ -186,16 +196,27 @@ const HeaderComponent = (props) => {
             >
                 <DialogTitle>Add new wallet</DialogTitle>
                 <DialogContent>
-                    <TextField
-                        disabled={disableDialogButtons}
-                        value={newWalletName}
-                        required
-                        id="wallet-name-field"
-                        label="Wallet name"
-                        size="small"
-                        variant="standard"
-                        onChange={handleChangeNewWalletName}
-                    />
+                    <Stack spacing={1}>
+                        <TextField
+                            disabled={disableDialogButtons}
+                            value={newWalletName}
+                            required
+                            id="wallet-name-field"
+                            label="Wallet name"
+                            size="small"
+                            variant="standard"
+                            onChange={handleChangeNewWalletName}
+                        />
+                        <TextField
+                            disabled={disableDialogButtons}
+                            value={newWalletDescribe}
+                            id="wallet-describe-field"
+                            label="Wallet describe"
+                            size="small"
+                            variant="standard"
+                            onChange={handleChangeNewWalletDescribe}
+                        />
+                    </Stack>
                 </DialogContent>
                 <DialogActions>
                     <Button disabled={disableDialogButtons} onClick={handleCloseDialog}>Cancel</Button>
@@ -231,7 +252,7 @@ const HeaderComponent = (props) => {
                                                     <ListItemIcon>
                                                         <InboxIcon />
                                                     </ListItemIcon>
-                                                    <ListItemText primary="All" />
+                                                    <ListItemText primary="Summary" />
                                                 </ListItemButton>
                                                 {userWallets.data.map((item, key) =>
                                                     <ListItemButton key={key}
@@ -241,7 +262,10 @@ const HeaderComponent = (props) => {
                                                         <ListItemIcon>
                                                             <InboxIcon />
                                                         </ListItemIcon>
-                                                        <ListItemText primary={item.name} />
+                                                        <Stack>
+                                                            <ListItemText primary={item.name} />
+                                                            {item.describe.length > 0 && (<ListItemText secondary={item.describe} />)}
+                                                        </Stack>
                                                     </ListItemButton>
                                                 )}
                                             </React.Fragment>
