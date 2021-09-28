@@ -1,34 +1,10 @@
 import { getSession } from 'next-auth/client';
 import nextConnect from 'next-connect';
-import { MongoClient } from 'mongodb';
 
 import middleware from '../../../middleware/database';
 
 const handler = nextConnect();
 handler.use(middleware);
-
-export async function getWalletsForInnerUse(userId) {
-    const client = new MongoClient(process.env.DATABASE_URL, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-    });
-
-    let data = [];
-
-    try {
-        await client.connect();
-        const db = client.db(process.env.DATABASE_NAME);
-        const collection = db.collection('wallets');
-        const wallets = await collection.find({ userId: userId }).toArray();
-        data = wallets;
-    } catch (e) {
-        data = [];
-    } finally {
-        await client.close()
-    }
-
-    return JSON.parse(JSON.stringify({ data }))
-}
 
 handler.get(async (req, res) => {
     const session = await getSession({ req });
@@ -78,7 +54,7 @@ handler.post(async (req, res) => {
         await req.db.collection('wallets').insertOne({ userId: userId, name: walletName });
 
         return res.json({
-            message: `Wallet ${walletName} was added successful`,
+            message: `Wallet '${walletName}' was added successful`,
             success: true,
         })
     } catch (error) {

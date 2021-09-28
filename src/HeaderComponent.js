@@ -1,7 +1,11 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
-import { signIn, signOut, useSession } from 'next-auth/client'
+import { signIn, signOut, useSession } from 'next-auth/client';
 import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+
+import SnackbarComponent from './global/Snackbar';
+import { openSnackbar, getUserWallets } from '../actions'
 
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -44,15 +48,25 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 const HeaderComponent = (props) => {
-    const { window, wallets } = props;
+    const { window } = props;
+    const [session, loading] = useSession();
+    const state = useSelector((state) => state);
+    const { userWallets } = state;
+
     const [mobileOpen, setMobileOpen] = React.useState(false);
-    const [session, loading] = useSession()
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [openPooper, setOpenPooper] = React.useState(false);
     const [currentWallet, setCurrentWallet] = React.useState('all');
     const [openBackdrop, setOpenBackdrop] = React.useState(false);
     const [openDialog, setOpenDialog] = React.useState(false);
-    const [newWalletName, setNewWalletName] = React.useState(null);
+    const [newWalletName, setNewWalletName] = React.useState('');
+    const [disableDialogButtons, setDisableDialogButtons] = React.useState(false);
+
+    const dispatch = useDispatch();
+
+    React.useEffect(() => {
+        dispatch(getUserWallets());
+    }, [])
 
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
@@ -85,7 +99,7 @@ const HeaderComponent = (props) => {
     }
 
     const handleCloseDialog = () => {
-        setNewWalletName(null);
+        setNewWalletName('');
         setOpenDialog(false);
     };
 
@@ -94,17 +108,22 @@ const HeaderComponent = (props) => {
     }
 
     const handleAddNewWallet = () => {
+        setDisableDialogButtons(true);
         axios.request({
             method: "post",
             url: "/api/wallet",
             data: { "walletName": newWalletName },
         })
             .then(response => {
-                console.log(response.data.message)
+                setDisableDialogButtons(false);
+                setNewWalletName('');
+                dispatch(openSnackbar(true, response.data.message, "success"));
                 setOpenDialog(false);
+                dispatch(getUserWallets());
             })
             .catch(error => {
-                console.log(error.response.data.message)
+                setDisableDialogButtons(false);
+                dispatch(openSnackbar(true, error.response.data.message, "error"));
             });
     }
 
@@ -144,6 +163,7 @@ const HeaderComponent = (props) => {
 
     return (
         <Box sx={{ flexGrow: 1, display: 'flex' }}>
+            <SnackbarComponent />
             <Backdrop
                 sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
                 open={openBackdrop}
@@ -167,6 +187,8 @@ const HeaderComponent = (props) => {
                 <DialogTitle>Add new wallet</DialogTitle>
                 <DialogContent>
                     <TextField
+                        disabled={disableDialogButtons}
+                        value={newWalletName}
                         required
                         id="wallet-name-field"
                         label="Wallet name"
@@ -176,8 +198,8 @@ const HeaderComponent = (props) => {
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCloseDialog}>Cancel</Button>
-                    <Button onClick={handleAddNewWallet}>Add</Button>
+                    <Button disabled={disableDialogButtons} onClick={handleCloseDialog}>Cancel</Button>
+                    <Button disabled={disableDialogButtons} onClick={handleAddNewWallet}>Add</Button>
                 </DialogActions>
             </Dialog>
             <Popper transition
@@ -200,7 +222,7 @@ const HeaderComponent = (props) => {
                                     </Box>
                                     <Divider />
                                     <List component="nav" aria-label="main wallets folders">
-                                        {Object.keys(wallets.data).length > 0
+                                        {Object.keys(userWallets.data).length > 0
                                             ? <React.Fragment>
                                                 <ListItemButton
                                                     selected={currentWallet === 'all'}
@@ -211,7 +233,7 @@ const HeaderComponent = (props) => {
                                                     </ListItemIcon>
                                                     <ListItemText primary="All" />
                                                 </ListItemButton>
-                                                {wallets.data.map((item, key) =>
+                                                {userWallets.data.map((item, key) =>
                                                     <ListItemButton key={key}
                                                         selected={currentWallet === item._id}
                                                         onClick={() => handleChangeWallet(item._id)}
@@ -269,14 +291,21 @@ const HeaderComponent = (props) => {
                     {!session && (
                         <Button color="inherit" onClick={signIn}>Login</Button>
                     )}
-                    {session && (
-                        <IconButton size="large" color="inherit" onClick={handleOpenPooper}>
-                            {session.user.image
-                                ? <Avatar src={session.user.image} />
-                                : <AccountCircle />
-                            }
-                        </IconButton>
-                    )}
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', }}>
+                        {session && (
+                            <React.Fragment>
+                                <IconButton size="small" color="inherit" onClick={handleOpenPooper}>
+                                    {session.user.image
+                                        ? <Avatar src={session.user.image} />
+                                        : <AccountCircle />
+                                    }
+                                </IconButton>
+                                {userWallets.loading && (
+                                    <CircularProgress sx={{ position: 'absolute' }} />
+                                )}
+                            </React.Fragment>
+                        )}
+                    </Box>
                 </Toolbar>
             </AppBar>
             <Box

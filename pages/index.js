@@ -1,6 +1,4 @@
 import * as React from 'react';
-import { getSession } from 'next-auth/client'
-import PropTypes from 'prop-types';
 
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
@@ -10,26 +8,10 @@ import HeaderComponent from '../src/HeaderComponent';
 import ProTip from '../src/ProTip';
 import Link from '../src/Link';
 import Copyright from '../src/Copyright';
-import { getWalletsForInnerUse } from '../pages/api/wallet';
 
-export const getServerSideProps = async ({ req, res }) => {
-    const session = await getSession({ req });
-
-    if (!session) {
-        res.statusCode = 403;
-        return { props: { wallets: { data: [] } } };
-    }
-
-    const jsonData = await getWalletsForInnerUse(session.user.id);
-
-    return { props: { wallets: jsonData } };
-};
-
-const Index = (props) => {
-    const { wallets } = props;
-
+const Index = () => {
     return (
-        <HeaderComponent wallets={wallets}>
+        <HeaderComponent>
             <Container maxWidth="sm">
                 <Box sx={{ my: 4 }}>
                     <Typography variant="h4" component="h1" gutterBottom>
@@ -45,9 +27,5 @@ const Index = (props) => {
         </HeaderComponent>
     );
 }
-
-Index.propTypes = {
-    wallets: PropTypes.object,
-};
 
 export default Index;
