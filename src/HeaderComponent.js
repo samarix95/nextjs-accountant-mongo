@@ -3,9 +3,11 @@ import PropTypes from 'prop-types';
 import { signIn, signOut, useSession } from 'next-auth/client';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
+import { useRouter } from 'next/router';
 
 import SnackbarComponent from './global/Snackbar';
 import { openSnackbar, getUserWallets } from '../actions'
+import Link from './Link';
 
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -17,8 +19,6 @@ import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemButton from '@mui/material/ListItemButton';
-import MailIcon from '@mui/icons-material/Mail';
-import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
@@ -28,7 +28,6 @@ import Fade from '@mui/material/Fade';
 import Paper from '@mui/material/Paper';
 import ClickAwayListener from "@mui/material/ClickAwayListener";
 import Container from "@mui/material/Container";
-import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -41,8 +40,17 @@ import Stack from '@mui/material/Stack';
 import InboxIcon from '@mui/icons-material/Inbox';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import AddBoxIcon from '@mui/icons-material/AddBox';
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+import HomeIcon from '@mui/icons-material/Home';
+import MenuIcon from '@mui/icons-material/Menu';
+import InfoIcon from '@mui/icons-material/Info';
 
 const drawerWidth = 240;
+
+const pages = {
+    "/": "Home",
+    "/about": "About",
+}
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="down" ref={ref} {...props} />;
@@ -53,12 +61,12 @@ const HeaderComponent = (props) => {
     const [session, loading] = useSession();
     const state = useSelector((state) => state);
     const { userWallets } = state;
+    const router = useRouter();
 
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [openPooper, setOpenPooper] = React.useState(false);
     const [currentWallet, setCurrentWallet] = React.useState('all');
-    const [openBackdrop, setOpenBackdrop] = React.useState(false);
     const [openDialog, setOpenDialog] = React.useState(false);
     const [newWalletName, setNewWalletName] = React.useState('');
     const [newWalletDescribe, setNewWalletDescribe] = React.useState('');
@@ -142,51 +150,34 @@ const HeaderComponent = (props) => {
     }
 
     const drawer = (
-        <div>
+        <Stack sx={{ flexGrow: 1, display: 'flex' }}>
             <Toolbar />
             <Divider />
-            <List>
-                {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-                    <ListItem button key={text}>
-                        <ListItemIcon>
-                            {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                        </ListItemIcon>
-                        <ListItemText primary={text} />
-                    </ListItem>
-                ))}
+            <List sx={{ flexGrow: 1 }}>
+                <ListItem button component={Link} noLinkStyle href="/">
+                    <ListItemIcon>
+                        <HomeIcon />
+                    </ListItemIcon>
+                    <ListItemText primary={pages["/"]} />
+                </ListItem>
             </List>
             <Divider />
-            <List>
-                {['All mail', 'Trash', 'Spam'].map((text, index) => (
-                    <ListItem button key={text}>
-                        <ListItemIcon>
-                            {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                        </ListItemIcon>
-                        <ListItemText primary={text} />
-                    </ListItem>
-                ))}
+            <List >
+                <ListItem button component={Link} noLinkStyle href="/about">
+                    <ListItemIcon>
+                        <InfoIcon />
+                    </ListItemIcon>
+                    <ListItemText primary={pages["/about"]} />
+                </ListItem>
             </List>
-        </div>
+        </Stack>
     );
 
     const container = window !== undefined ? () => window().document.body : undefined;
 
     return (
-        <Box sx={{ flexGrow: 1, display: 'flex' }}>
+        <React.Fragment>
             <SnackbarComponent />
-            <Backdrop
-                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-                open={openBackdrop}
-            >
-                <Box sx={{ p: 1 }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                        <CircularProgress color="inherit" />
-                    </Box>
-                    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                        <Typography>Loading</Typography>
-                    </Box>
-                </Box>
-            </Backdrop>
             <Dialog
                 open={openDialog}
                 TransitionComponent={Transition}
@@ -310,7 +301,7 @@ const HeaderComponent = (props) => {
                         <MenuIcon />
                     </IconButton>
                     <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                        News
+                        {pages[router.pathname]}
                     </Typography>
                     {!session && (
                         <Button color="inherit" onClick={signIn}>Login</Button>
@@ -332,11 +323,7 @@ const HeaderComponent = (props) => {
                     </Box>
                 </Toolbar>
             </AppBar>
-            <Box
-                component="nav"
-                sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-                aria-label="mailbox folders"
-            >
+            <Box component="nav" aria-label="folders" sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}  >
                 {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
                 <Drawer
                     container={container}
@@ -364,16 +351,11 @@ const HeaderComponent = (props) => {
                     {drawer}
                 </Drawer>
             </Box>
-            <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-                <Toolbar />
-                {props.children}
-            </Box>
-        </Box>
+        </React.Fragment>
     );
 }
 
 HeaderComponent.propTypes = {
-    children: PropTypes.node.isRequired,
     window: PropTypes.func,
     wallets: PropTypes.object,
 };

@@ -10,6 +10,11 @@ import { Provider } from 'next-auth/client'
 import { Provider as ReduxProvider } from "react-redux";
 import { useStore } from '../store'
 
+import HeaderComponent from '../src/HeaderComponent';
+
+import Box from '@mui/material/Box';
+import Toolbar from '@mui/material/Toolbar';
+
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
 
@@ -26,9 +31,15 @@ const MyApp = (props) => {
                         <meta name="viewport" content="initial-scale=1, width=device-width" />
                     </Head>
                     <ThemeProvider theme={theme}>
-                        {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-                        <CssBaseline />
-                        <Component {...pageProps} />
+                        <Box sx={{ display: 'flex' }}>
+                            {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+                            <CssBaseline />
+                            <HeaderComponent />
+                            <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+                                <Toolbar />
+                                <Component {...pageProps} />
+                            </Box>
+                        </Box>
                     </ThemeProvider>
                 </CacheProvider>
             </Provider>
