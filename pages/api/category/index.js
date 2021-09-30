@@ -76,7 +76,7 @@ handler.post(async (req, res) => {
         await req.db.collection('categories').insertOne({
             userId: userId,
             name: categoryName,
-            describe: categoryDescription === null ? '' : categoryDescription,
+            description: categoryDescription === null ? '' : categoryDescription,
             isSpending: isSpending,
             isDeleted: false,
             deleteDate: null,
@@ -99,7 +99,7 @@ handler.put(async (req, res) => {
         return res.status(401).json({ message: "You're not autorized" });
     }
 
-    const { id, categoryName, categoryDescribe, isSpending } = req.body;
+    const { id, categoryName, categoryDescription, isSpending } = req.body;
     const userId = session.user.id;
 
     if (id === null) {
@@ -133,7 +133,7 @@ handler.put(async (req, res) => {
         await req.db.collection('categories').updateOne({ _id: ObjectId(id), userId: userId }, {
             $set: {
                 name: categoryName,
-                describe: categoryDescribe === null ? '' : categoryDescribe,
+                description: categoryDescription === null ? '' : categoryDescription,
                 isSpending: isSpending,
             }
         });

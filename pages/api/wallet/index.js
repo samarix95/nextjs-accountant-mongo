@@ -39,7 +39,7 @@ handler.post(async (req, res) => {
         return res.status(401).json({ message: "You're not autorized" });
     }
 
-    const { walletName, walletDescribe } = req.body;
+    const { walletName, walletDescription } = req.body;
     const userId = session.user.id;
 
     if (walletName === null) {
@@ -66,7 +66,7 @@ handler.post(async (req, res) => {
 
     // Add new wallet
     try {
-        await req.db.collection('wallets').insertOne({ userId: userId, name: walletName, describe: walletDescribe === null ? '' : walletDescribe, isDeleted: false, deleteDate: null });
+        await req.db.collection('wallets').insertOne({ userId: userId, name: walletName, description: walletDescription === null ? '' : walletDescription, isDeleted: false, deleteDate: null });
 
         return res.status(200).json({
             message: `Wallet '${walletName}' was added successful`,
@@ -85,7 +85,7 @@ handler.put(async (req, res) => {
         return res.status(401).json({ message: "You're not autorized" });
     }
 
-    const { id, walletName, walletDescribe } = req.body;
+    const { id, walletName, walletDescription } = req.body;
     const userId = session.user.id;
 
     if (id === null) {
@@ -116,7 +116,7 @@ handler.put(async (req, res) => {
 
     // Update wallet
     try {
-        await req.db.collection('wallets').updateOne({ _id: ObjectId(id), userId: userId }, { $set: { name: walletName, describe: walletDescribe === null ? '' : walletDescribe } });
+        await req.db.collection('wallets').updateOne({ _id: ObjectId(id), userId: userId }, { $set: { name: walletName, description: walletDescription === null ? '' : walletDescription } });
 
         return res.status(200).json({
             message: `Wallet was updated`,

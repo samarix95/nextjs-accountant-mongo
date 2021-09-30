@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
 
 import SnackbarComponent from './global/Snackbar';
-import { getUserWallets } from '../actions';
+import { getUserWallets, getUserCategories } from '../actions';
 import Link from './Link';
 import AddWalletDialog from './wallet/AddWalletDialog';
 
@@ -39,14 +39,18 @@ import HomeIcon from '@mui/icons-material/Home';
 import MenuIcon from '@mui/icons-material/Menu';
 import InfoIcon from '@mui/icons-material/Info';
 import DehazeIcon from '@mui/icons-material/Dehaze';
+import LocalAtmIcon from '@mui/icons-material/LocalAtm';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 const drawerWidth = 240;
 
 const pages = {
     "/": "Home",
-    "/about": "About",
+    "/balance": "My balance",
     "/wallets": "My wallets",
     "/categories": "My categories",
+    "/settings": "Settings",
+    "/about": "About",
 }
 
 const HeaderComponent = (props) => {
@@ -100,6 +104,7 @@ const HeaderComponent = (props) => {
 
     React.useEffect(() => {
         dispatch(getUserWallets());
+        dispatch(getUserCategories());
     }, [])
 
     if (loading) {
@@ -123,6 +128,19 @@ const HeaderComponent = (props) => {
                         <HomeIcon />
                     </ListItemIcon>
                     <ListItemText primary={pages["/"]} />
+                </ListItem>
+                <ListItem
+                    button
+                    component={Link}
+                    noLinkStyle
+                    href="/balance"
+                    selected={selectedDrawerIndex === "/balance"}
+                    onClick={() => handleListItemClick("/balance")}
+                >
+                    <ListItemIcon>
+                        <LocalAtmIcon />
+                    </ListItemIcon>
+                    <ListItemText primary={pages["/balance"]} />
                 </ListItem>
                 <ListItem
                     button
@@ -153,6 +171,19 @@ const HeaderComponent = (props) => {
             </List>
             <Divider />
             <List >
+                <ListItem
+                    button
+                    component={Link}
+                    noLinkStyle
+                    href="/settings"
+                    selected={selectedDrawerIndex === "/settings"}
+                    onClick={() => handleListItemClick("/settings")}
+                >
+                    <ListItemIcon>
+                        <SettingsIcon />
+                    </ListItemIcon>
+                    <ListItemText primary={pages["/settings"]} />
+                </ListItem>
                 <ListItem
                     button
                     component={Link}
@@ -217,7 +248,7 @@ const HeaderComponent = (props) => {
                                                         </ListItemIcon>
                                                         <Stack>
                                                             <ListItemText primary={item.name} />
-                                                            {item.describe && (<ListItemText secondary={item.describe} />)}
+                                                            {item.description && (<ListItemText secondary={item.description} />)}
                                                         </Stack>
                                                     </ListItemButton>
                                                 )}

@@ -41,8 +41,8 @@ const EditCategoryDialog = (props) => {
         setOpenEditDialogData({ ...openEditDialogData, categoryName: event.target.value });
     }
 
-    const handleChangeNewCategoryDescribe = (event) => {
-        setOpenEditDialogData({ ...openEditDialogData, categoryDescribe: event.target.value });
+    const handleChangeNewCategoryDescription = (event) => {
+        setOpenEditDialogData({ ...openEditDialogData, categoryDescription: event.target.value });
     }
 
     const handleAddNewCategory = () => {
@@ -50,7 +50,7 @@ const EditCategoryDialog = (props) => {
         axios.request({
             method: "put",
             url: "/api/category",
-            data: { id: openEditDialogData.categoryId, categoryName: openEditDialogData.categoryName, categoryDescribe: openEditDialogData.categoryDescribe, isSpending: openEditDialogData.isSpending },
+            data: { id: openEditDialogData.categoryId, categoryName: openEditDialogData.categoryName, categoryDescription: openEditDialogData.categoryDescription, isSpending: openEditDialogData.isSpending },
         })
             .then(response => {
                 setDisableDialogButtons(false);
@@ -90,12 +90,14 @@ const EditCategoryDialog = (props) => {
                     />
                     <TextField
                         disabled={disableDialogButtons}
-                        value={openEditDialogData.categoryDescribe || ''}
-                        id="category-describe-field"
-                        label="Category describe"
+                        value={openEditDialogData.categoryDescription || ''}
+                        id="category-description-field"
+                        label="Category description"
                         size="small"
                         variant="standard"
-                        onChange={handleChangeNewCategoryDescribe}
+                        onChange={handleChangeNewCategoryDescription}
+                        multiline
+                        rows={3}
                     />
                 </Stack>
             </DialogContent>

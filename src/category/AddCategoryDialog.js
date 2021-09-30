@@ -50,7 +50,7 @@ const AddCategoryDialog = (props) => {
         setNewCategoryName(event.target.value);
     }
 
-    const handleChangeNewCategoryDescribe = (event) => {
+    const handleChangeNewCategoryDescription = (event) => {
         setNewCategoryDescription(event.target.value);
     }
 
@@ -101,11 +101,13 @@ const AddCategoryDialog = (props) => {
                     <TextField
                         disabled={disableDialogButtons}
                         value={newCategoryDescription}
-                        id="Category-describe-field"
+                        id="Category-description-field"
                         label="Category description"
                         size="small"
                         variant="standard"
-                        onChange={handleChangeNewCategoryDescribe}
+                        onChange={handleChangeNewCategoryDescription}
+                        multiline
+                        rows={3}
                     />
                 </Stack>
             </DialogContent>

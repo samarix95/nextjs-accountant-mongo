@@ -27,15 +27,15 @@ const Wallets = () => {
     const { userWallets } = state;
 
     const [openAddDialog, setOpenAddDialog] = React.useState(false);
-    const [openEditDialogData, setOpenEditDialogData] = React.useState({ openDialog: false, walletId: '', walletName: '', walletDescribe: '' });
+    const [openEditDialogData, setOpenEditDialogData] = React.useState({ openDialog: false, walletId: '', walletName: '', walletDescription: '' });
     const [openDeleteDialogData, setOpenDeleteDialogData] = React.useState({ openDialog: false, walletId: '', walletName: '' });
 
     const handleAddWallet = () => {
         setOpenAddDialog(true);
     }
 
-    const handleEditWallet = (id, name, describe) => {
-        setOpenEditDialogData({ openDialog: true, walletId: id, walletName: name, walletDescribe: describe });
+    const handleEditWallet = (id, name, description) => {
+        setOpenEditDialogData({ openDialog: true, walletId: id, walletName: name, walletDescription: description });
     }
 
     const handleDeleteWallet = (id, name) => {
@@ -64,12 +64,12 @@ const Wallets = () => {
                                             {item.name}
                                         </Typography>
                                         <Typography variant="body2" color="text.secondary">
-                                            {item.describe}
+                                            {item.description}
                                         </Typography>
                                     </CardContent>
                                     <CardActions>
                                         <Stack direction="row" spacing={1}>
-                                            <Button size="small" color="inherit" startIcon={<EditIcon />} onClick={() => handleEditWallet(item._id, item.name, item.describe)}>Edit</Button>
+                                            <Button size="small" color="inherit" startIcon={<EditIcon />} onClick={() => handleEditWallet(item._id, item.name, item.description)}>Edit</Button>
                                             <Button size="small" color="inherit" startIcon={<DeleteIcon />} onClick={() => handleDeleteWallet(item._id, item.name)}>Delete</Button>
                                         </Stack>
                                     </CardActions>

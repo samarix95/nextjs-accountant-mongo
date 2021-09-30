@@ -23,12 +23,12 @@ const AddWalletDialog = (props) => {
     const dispatch = useDispatch();
 
     const [newWalletName, setNewWalletName] = React.useState('');
-    const [newWalletDescribe, setNewWalletDescribe] = React.useState('');
+    const [newWalletDescription, setNewWalletDescription] = React.useState('');
     const [disableDialogButtons, setDisableDialogButtons] = React.useState(false);
 
     const resetWalletDialogData = () => {
         setNewWalletName('');
-        setNewWalletDescribe('');
+        setNewWalletDescription('');
     }
 
     const handleCloseDialog = () => {
@@ -42,8 +42,8 @@ const AddWalletDialog = (props) => {
         setNewWalletName(event.target.value);
     }
 
-    const handleChangeNewWalletDescribe = (event) => {
-        setNewWalletDescribe(event.target.value);
+    const handleChangeNewWalletDescription = (event) => {
+        setNewWalletDescription(event.target.value);
     }
 
     const handleAddNewWallet = () => {
@@ -51,7 +51,7 @@ const AddWalletDialog = (props) => {
         axios.request({
             method: "post",
             url: "/api/wallet",
-            data: { walletName: newWalletName, walletDescribe: newWalletDescribe },
+            data: { walletName: newWalletName, walletDescription: newWalletDescription },
         })
             .then(response => {
                 setDisableDialogButtons(false);
@@ -89,12 +89,14 @@ const AddWalletDialog = (props) => {
                     />
                     <TextField
                         disabled={disableDialogButtons}
-                        value={newWalletDescribe}
-                        id="wallet-describe-field"
-                        label="Wallet describe"
+                        value={newWalletDescription}
+                        id="wallet-description-field"
+                        label="Wallet description"
                         size="small"
                         variant="standard"
-                        onChange={handleChangeNewWalletDescribe}
+                        onChange={handleChangeNewWalletDescription}
+                        multiline
+                        rows={3}
                     />
                 </Stack>
             </DialogContent>

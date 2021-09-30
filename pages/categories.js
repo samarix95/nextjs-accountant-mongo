@@ -1,7 +1,5 @@
 import * as React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-
-import { getUserCategories } from '../actions';
+import { useSelector } from 'react-redux';
 
 import AddCategoryDialog from '../src/category/AddCategoryDialog';
 import EditCategoryDialog from '../src/category/EditCategoryDialog';
@@ -24,30 +22,25 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 
 const Categories = () => {
-    const dispatch = useDispatch();
     const state = useSelector((state) => state);
 
     const { userCategories } = state;
 
     const [openAddDialog, setOpenAddDialog] = React.useState(false);
-    const [openEditDialogData, setOpenEditDialogData] = React.useState({ openDialog: false, categoryId: '', categoryName: '', categoryDescribe: '', isSpending: false });
+    const [openEditDialogData, setOpenEditDialogData] = React.useState({ openDialog: false, categoryId: '', categoryName: '', categoryDescription: '', isSpending: false });
     const [openDeleteDialogData, setOpenDeleteDialogData] = React.useState({ openDialog: false, categoryId: '', categoryName: '' });
 
     const handleAddCategory = () => {
         setOpenAddDialog(true);
     }
 
-    const handleEditCategory = (id, name, describe, spending) => {
-        setOpenEditDialogData({ openDialog: true, categoryId: id, categoryName: name, categoryDescribe: describe, isSpending: spending });
+    const handleEditCategory = (id, name, description, spending) => {
+        setOpenEditDialogData({ openDialog: true, categoryId: id, categoryName: name, categoryDescription: description, isSpending: spending });
     }
 
     const handleDeleteCategory = (id, name) => {
         setOpenDeleteDialogData({ openDialog: true, categoryId: id, categoryName: name });
     }
-
-    React.useEffect(() => {
-        dispatch(getUserCategories());
-    }, [])
 
     return (
         <Container maxWidth="sm">
@@ -65,7 +58,7 @@ const Categories = () => {
                     : <Box sx={{ p: 1 }}>
                         <Stack spacing={1} direction={{ xs: 'column', sm: 'row' }} >
                             <Stack spacing={1} >
-                                <Typography variant="h6">Incomings</Typography>
+                                {userCategories.data.length > 0 && (<Typography variant="h6">Incomings</Typography>)}
                                 {userCategories.data
                                     .sort((a, b) => Number(a.isSpending) - Number(b.isSpending) || a.name.localeCompare(b.name))
                                     .filter(category => !category.isSpending)
@@ -76,12 +69,12 @@ const Categories = () => {
                                                     {item.name}
                                                 </Typography>
                                                 <Typography variant="body2" color="text.secondary">
-                                                    {item.describe}
+                                                    {item.description}
                                                 </Typography>
                                             </CardContent>
                                             <CardActions>
                                                 <Stack direction="row" spacing={1}>
-                                                    <Button size="small" color="inherit" startIcon={<EditIcon />} onClick={() => handleEditCategory(item._id, item.name, item.describe)}>Edit</Button>
+                                                    <Button size="small" color="inherit" startIcon={<EditIcon />} onClick={() => handleEditCategory(item._id, item.name, item.description)}>Edit</Button>
                                                     <Button size="small" color="inherit" startIcon={<DeleteIcon />} onClick={() => handleDeleteCategory(item._id, item.name)}>Delete</Button>
                                                 </Stack>
                                             </CardActions>
@@ -89,7 +82,7 @@ const Categories = () => {
                                     )}
                             </Stack>
                             <Stack spacing={1} >
-                                <Typography variant="h6">Outgoings</Typography>
+                                {userCategories.data.length > 0 && (<Typography variant="h6">Outgoings</Typography>)}
                                 {userCategories.data
                                     .sort((a, b) => Number(a.isSpending) - Number(b.isSpending) || a.name.localeCompare(b.name))
                                     .filter(category => category.isSpending)
@@ -100,12 +93,12 @@ const Categories = () => {
                                                     {item.name}
                                                 </Typography>
                                                 <Typography variant="body2" color="text.secondary">
-                                                    {item.describe}
+                                                    {item.description}
                                                 </Typography>
                                             </CardContent>
                                             <CardActions>
                                                 <Stack direction="row" spacing={1}>
-                                                    <Button size="small" color="inherit" startIcon={<EditIcon />} onClick={() => handleEditCategory(item._id, item.name, item.describe, item.isSpending)}>Edit</Button>
+                                                    <Button size="small" color="inherit" startIcon={<EditIcon />} onClick={() => handleEditCategory(item._id, item.name, item.description, item.isSpending)}>Edit</Button>
                                                     <Button size="small" color="inherit" startIcon={<DeleteIcon />} onClick={() => handleDeleteCategory(item._id, item.name)}>Delete</Button>
                                                 </Stack>
                                             </CardActions>

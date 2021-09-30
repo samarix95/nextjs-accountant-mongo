@@ -34,8 +34,8 @@ const EditWalletDialog = (props) => {
         setOpenEditDialogData({ ...openEditDialogData, walletName: event.target.value });
     }
 
-    const handleChangeNewWalletDescribe = (event) => {
-        setOpenEditDialogData({ ...openEditDialogData, walletDescribe: event.target.value });
+    const handleChangeNewWalletDescription = (event) => {
+        setOpenEditDialogData({ ...openEditDialogData, walletDescription: event.target.value });
     }
 
     const handleAddNewWallet = () => {
@@ -43,7 +43,7 @@ const EditWalletDialog = (props) => {
         axios.request({
             method: "put",
             url: "/api/wallet",
-            data: { id: openEditDialogData.walletId, walletName: openEditDialogData.walletName, walletDescribe: openEditDialogData.walletDescribe },
+            data: { id: openEditDialogData.walletId, walletName: openEditDialogData.walletName, walletDescription: openEditDialogData.walletDescription },
         })
             .then(response => {
                 setDisableDialogButtons(false);
@@ -80,12 +80,14 @@ const EditWalletDialog = (props) => {
                     />
                     <TextField
                         disabled={disableDialogButtons}
-                        value={openEditDialogData.walletDescribe || ''}
-                        id="wallet-describe-field"
-                        label="Wallet describe"
+                        value={openEditDialogData.walletDescription || ''}
+                        id="wallet-description-field"
+                        label="Wallet description"
                         size="small"
                         variant="standard"
-                        onChange={handleChangeNewWalletDescribe}
+                        onChange={handleChangeNewWalletDescription}
+                        multiline
+                        rows={3}
                     />
                 </Stack>
             </DialogContent>
