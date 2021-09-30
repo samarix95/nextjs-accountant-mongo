@@ -1,63 +1,66 @@
 import * as React from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
-import AddWalletDialog from '../src/wallet/AddWalletDialog';
-import DeleteWalletDialog from '../src/wallet/DeleteWalletDialog';
-import EditWalletDialog from '../src/wallet/EditWalletDialog';
+import { getUserCategories } from '../actions';
+
+import AddCategoryDialog from '../src/category/AddCategoryDialog';
 import ProTip from '../src/ProTip';
 import Copyright from '../src/Copyright';
 
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import CircularProgress from '@mui/material/CircularProgress';
 import Stack from '@mui/material/Stack';
-
+import CircularProgress from '@mui/material/CircularProgress';
 import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
+import CardActions from '@mui/material/CardActions';
 import Button from '@mui/material/Button';
 
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 
-const Wallets = () => {
+const Categories = () => {
+    const dispatch = useDispatch();
     const state = useSelector((state) => state);
-    const { userWallets } = state;
+
+    const { userCategories } = state;
 
     const [openAddDialog, setOpenAddDialog] = React.useState(false);
-    const [openDeleteDialogData, setOpenDeleteDialogData] = React.useState({ openDialog: false, walletId: '', walletName: '' });
-    const [openEditDialogData, setOpenEditDialogData] = React.useState({ openDialog: false, walletId: '', walletName: '', walletDescribe: '' });
+    const [openEditDialogData, setOpenEditDialogData] = React.useState({ openDialog: false, categoryId: '', categoryName: '', categoryDescribe: '' });
+    const [openDeleteDialogData, setOpenDeleteDialogData] = React.useState({ openDialog: false, categoryId: '', categoryName: '' });
 
-    const handleAddWallet = () => {
+    const handleAddCategory = () => {
         setOpenAddDialog(true);
     }
 
-    const handleEditWallet = (id, name, describe) => {
-        setOpenEditDialogData({ openDialog: true, walletId: id, walletName: name, walletDescribe: describe });
+    const handleEditCategory = (id, name, describe) => {
+        setOpenEditDialogData({ openDialog: true, categoryId: id, categoryName: name, categoryDescribe: describe });
     }
 
-    const handleDeleteWallet = (id, name) => {
-        setOpenDeleteDialogData({ openDialog: true, walletId: id, walletName: name });
+    const handleDeleteCategory = (id, name) => {
+        setOpenDeleteDialogData({ openDialog: true, categoryId: id, categoryName: name });
     }
+
+    React.useEffect(() => {
+        dispatch(getUserCategories());
+    }, [])
 
     return (
         <Container maxWidth="sm">
-            <AddWalletDialog openDialog={openAddDialog} setOpenDialog={setOpenAddDialog} />
-            <DeleteWalletDialog openDeleteDialogData={openDeleteDialogData} setOpenDeleteDialogData={setOpenDeleteDialogData} />
-            <EditWalletDialog openEditDialogData={openEditDialogData} setOpenEditDialogData={setOpenEditDialogData} />
+            <AddCategoryDialog openDialog={openAddDialog} setOpenDialog={setOpenAddDialog} />
             <Box sx={{ my: 4 }}>
-                {userWallets.loading
+                {userCategories.loading
                     ? <Stack sx={{ display: 'flex', height: 200, alignItems: 'center', justifyContent: 'center', }}>
                         <CircularProgress />
                         <Typography variant="body2">
-                            Loading wallets
+                            Loading categories
                         </Typography>
                     </Stack>
                     : <Box sx={{ p: 1 }}>
                         <Stack spacing={1}>
-                            {userWallets.data.map(item =>
+                            {userCategories.data.map(item =>
                                 <Card key={item._id} variant="outlined">
                                     <CardContent>
                                         <Typography variant="h6" gutterBottom>
@@ -69,16 +72,16 @@ const Wallets = () => {
                                     </CardContent>
                                     <CardActions>
                                         <Stack direction="row" spacing={1}>
-                                            <Button size="small" color="inherit" startIcon={<EditIcon />} onClick={() => handleEditWallet(item._id, item.name, item.describe)}>Edit</Button>
-                                            <Button size="small" color="inherit" startIcon={<DeleteIcon />} onClick={() => handleDeleteWallet(item._id, item.name)}>Delete</Button>
+                                            <Button size="small" color="inherit" startIcon={<EditIcon />} onClick={() => handleEditCategory(item._id, item.name, item.describe)}>Edit</Button>
+                                            <Button size="small" color="inherit" startIcon={<DeleteIcon />} onClick={() => handleDeleteCategory(item._id, item.name)}>Delete</Button>
                                         </Stack>
                                     </CardActions>
                                 </Card>
                             )}
                         </Stack>
                         <Box sx={{ p: 1, display: 'flex', justifyContent: 'center' }}>
-                            <Button color="inherit" size="large" startIcon={<AddBoxIcon />} onClick={handleAddWallet}>
-                                Add wallet
+                            <Button color="inherit" size="large" startIcon={<AddBoxIcon />} onClick={handleAddCategory}>
+                                Add Category
                             </Button>
                         </Box>
                     </Box>
@@ -90,4 +93,4 @@ const Wallets = () => {
     );
 }
 
-export default Wallets;
+export default Categories;

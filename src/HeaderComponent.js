@@ -38,6 +38,7 @@ import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import HomeIcon from '@mui/icons-material/Home';
 import MenuIcon from '@mui/icons-material/Menu';
 import InfoIcon from '@mui/icons-material/Info';
+import DehazeIcon from '@mui/icons-material/Dehaze';
 
 const drawerWidth = 240;
 
@@ -45,6 +46,7 @@ const pages = {
     "/": "Home",
     "/about": "About",
     "/wallets": "My wallets",
+    "/categories": "My categories",
 }
 
 const HeaderComponent = (props) => {
@@ -117,6 +119,12 @@ const HeaderComponent = (props) => {
                     </ListItemIcon>
                     <ListItemText primary={pages["/wallets"]} />
                 </ListItem>
+                <ListItem button component={Link} noLinkStyle href="/categories">
+                    <ListItemIcon>
+                        <DehazeIcon />
+                    </ListItemIcon>
+                    <ListItemText primary={pages["/categories"]} />
+                </ListItem>
             </List>
             <Divider />
             <List >
@@ -177,7 +185,7 @@ const HeaderComponent = (props) => {
                                                         </ListItemIcon>
                                                         <Stack>
                                                             <ListItemText primary={item.name} />
-                                                            {item.describe.length > 0 && (<ListItemText secondary={item.describe} />)}
+                                                            {item.describe && (<ListItemText secondary={item.describe} />)}
                                                         </Stack>
                                                     </ListItemButton>
                                                 )}

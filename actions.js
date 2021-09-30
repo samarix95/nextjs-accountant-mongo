@@ -1,28 +1,6 @@
 import axios from 'axios';
 
-import * as types from './types'
-
-// INITIALIZES CLOCK ON SERVER
-export const serverRenderClock = () => (dispatch) =>
-    dispatch({
-        type: types.TICK,
-        payload: { light: false, ts: Date.now() },
-    })
-
-// INITIALIZES CLOCK ON CLIENT
-export const startClock = () => (dispatch) =>
-    setInterval(() => {
-        dispatch({ type: types.TICK, payload: { light: true, ts: Date.now() } })
-    }, 1000)
-
-// INCREMENT COUNTER BY 1
-export const incrementCount = () => ({ type: types.INCREMENT })
-
-// DECREMENT COUNTER BY 1
-export const decrementCount = () => ({ type: types.DECREMENT })
-
-// RESET COUNTER
-export const resetCount = () => ({ type: types.RESET })
+import * as types from './types';
 
 // Open Snackbar
 export const openSnackbar = (open, message, type) => (dispatch) => dispatch({
@@ -47,7 +25,7 @@ export const getUserWallets = () => {
                 dispatch(getWalletSuccess(response.data));
             })
             .catch(error => {
-                console.log(error);
+                dispatch(getWalletError(error));
             });
     };
 }
@@ -58,14 +36,41 @@ const getWalletPending = () => ({
 
 const getWalletSuccess = wallets => ({
     type: types.GET_WALLET_SUCCESS,
-    payload: {
-        ...wallets
-    }
+    payload: { ...wallets }
 })
 
 const getWalletError = error => ({
     type: types.GET_WALLET_ERROR,
-    payload: {
-        error
-    }
+    payload: { error }
+})
+
+// Get user categories
+export const getUserCategories = () => {
+    return dispatch => {
+        dispatch(getCategoryPending());
+        axios.request({
+            method: "get",
+            url: "/api/category",
+        })
+            .then(response => {
+                dispatch(getCategorySuccess(response.data));
+            })
+            .catch(error => {
+                dispatch(getCategoryError(error));
+            });
+    };
+}
+
+const getCategoryPending = () => ({
+    type: types.GET_CATEGORY_PENDING
+})
+
+const getCategorySuccess = categories => ({
+    type: types.GET_CATEGORY_SUCCESS,
+    payload: { ...categories }
+})
+
+const getCategoryError = error => ({
+    type: types.GET_CATEGORY_ERROR,
+    payload: { error }
 })

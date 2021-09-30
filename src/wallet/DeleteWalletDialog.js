@@ -16,14 +16,14 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 const DeleteWalletDialog = (props) => {
-    const { openDialog, setOpenDialog, walletData } = props;
+    const { openDeleteDialogData, setOpenDeleteDialogData } = props;
     const dispatch = useDispatch();
 
     const [disableDialogButtons, setDisableDialogButtons] = React.useState(false);
 
     const handleCloseDialog = () => {
         if (!disableDialogButtons) {
-            setOpenDialog(false);
+            setOpenDeleteDialogData({ ...openDeleteDialogData, openDialog: false });
         }
     };
 
@@ -32,12 +32,12 @@ const DeleteWalletDialog = (props) => {
         axios.request({
             method: "delete",
             url: "/api/wallet",
-            data: { id: walletData.walletId },
+            data: { id: openDeleteDialogData.walletId },
         })
             .then(response => {
                 setDisableDialogButtons(false);
                 dispatch(openSnackbar(true, response.data.message, "success"));
-                setOpenDialog(false);
+                setOpenDeleteDialogData({ ...openDeleteDialogData, openDialog: false });
                 dispatch(getUserWallets());
             })
             .catch(error => {
@@ -48,13 +48,13 @@ const DeleteWalletDialog = (props) => {
 
     return (
         <Dialog
-            open={openDialog}
+            open={openDeleteDialogData.openDialog}
             TransitionComponent={Transition}
             keepMounted
             onClose={handleCloseDialog}
             aria-describedby="alert-dialog-slide-description"
         >
-            <DialogTitle>Do you want to delete wallet "{walletData.walletName}"?</DialogTitle>
+            <DialogTitle>Do you want to delete wallet "{openDeleteDialogData.walletName}"?</DialogTitle>
             <DialogActions>
                 <Button disabled={disableDialogButtons} onClick={handleCloseDialog}>Cancel</Button>
                 <Button disabled={disableDialogButtons} onClick={handleAddNewWallet}>Delete</Button>

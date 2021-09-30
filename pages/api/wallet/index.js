@@ -113,7 +113,7 @@ handler.put(async (req, res) => {
             message: new Error(error).message,
         });
     }
-    console.log(walletDescribe)
+
     // Update wallet
     try {
         await req.db.collection('wallets').updateOne({ _id: ObjectId(id), userId: userId }, { $set: { name: walletName, describe: walletDescribe === null ? '' : walletDescribe } });

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
 
-import { openSnackbar, getUserWallets } from '../../actions';
+import { openSnackbar, getUserCategories } from '../../actions';
 
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -18,47 +18,47 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="down" ref={ref} {...props} />;
 });
 
-const AddWalletDialog = (props) => {
+const AddCategoryDialog = (props) => {
     const { openDialog, setOpenDialog } = props;
     const dispatch = useDispatch();
 
-    const [newWalletName, setNewWalletName] = React.useState('');
-    const [newWalletDescribe, setNewWalletDescribe] = React.useState('');
+    const [newCategoryName, setNewCategoryName] = React.useState('');
+    const [newCategoryDescribe, setNewCategoryDescribe] = React.useState('');
     const [disableDialogButtons, setDisableDialogButtons] = React.useState(false);
 
-    const resetWalletDialogData = () => {
-        setNewWalletName('');
-        setNewWalletDescribe('');
+    const resetCategoryDialogData = () => {
+        setNewCategoryName('');
+        setNewCategoryDescribe('');
     }
 
     const handleCloseDialog = () => {
         if (!disableDialogButtons) {
             setOpenDialog(false);
-            resetWalletDialogData();
+            resetCategoryDialogData();
         }
     };
 
-    const handleChangeNewWalletName = (event) => {
-        setNewWalletName(event.target.value);
+    const handleChangeNewCategoryName = (event) => {
+        setNewCategoryName(event.target.value);
     }
 
-    const handleChangeNewWalletDescribe = (event) => {
-        setNewWalletDescribe(event.target.value);
+    const handleChangeNewCategoryDescribe = (event) => {
+        setNewCategoryDescribe(event.target.value);
     }
 
-    const handleAddNewWallet = () => {
+    const handleAddNewCategory = () => {
         setDisableDialogButtons(true);
         axios.request({
             method: "post",
-            url: "/api/wallet",
-            data: { walletName: newWalletName, walletDescribe: newWalletDescribe },
+            url: "/api/category",
+            data: { CategoryName: newCategoryName, CategoryDescribe: newCategoryDescribe },
         })
             .then(response => {
                 setDisableDialogButtons(false);
                 setOpenDialog(false);
-                resetWalletDialogData();
+                resetCategoryDialogData();
                 dispatch(openSnackbar(true, response.data.message, "success"));
-                dispatch(getUserWallets());
+                dispatch(getUserCategories());
             })
             .catch(error => {
                 setDisableDialogButtons(false);
@@ -74,41 +74,41 @@ const AddWalletDialog = (props) => {
             onClose={handleCloseDialog}
             aria-describedby="alert-dialog-slide-description"
         >
-            <DialogTitle>Add new wallet</DialogTitle>
+            <DialogTitle>Add new category</DialogTitle>
             <DialogContent>
                 <Stack spacing={1}>
                     <TextField
                         disabled={disableDialogButtons}
-                        value={newWalletName}
+                        value={newCategoryName}
                         required
-                        id="wallet-name-field"
-                        label="Wallet name"
+                        id="Category-name-field"
+                        label="Category name"
                         size="small"
                         variant="standard"
-                        onChange={handleChangeNewWalletName}
+                        onChange={handleChangeNewCategoryName}
                     />
                     <TextField
                         disabled={disableDialogButtons}
-                        value={newWalletDescribe}
-                        id="wallet-describe-field"
-                        label="Wallet describe"
+                        value={newCategoryDescribe}
+                        id="Category-describe-field"
+                        label="Category describe"
                         size="small"
                         variant="standard"
-                        onChange={handleChangeNewWalletDescribe}
+                        onChange={handleChangeNewCategoryDescribe}
                     />
                 </Stack>
             </DialogContent>
             <DialogActions>
                 <Button disabled={disableDialogButtons} onClick={handleCloseDialog}>Cancel</Button>
-                <Button disabled={disableDialogButtons} onClick={handleAddNewWallet}>Add</Button>
+                <Button disabled={disableDialogButtons} onClick={handleAddNewCategory}>Add</Button>
             </DialogActions>
         </Dialog>
     );
 }
 
-AddWalletDialog.propTypes = {
+AddCategoryDialog.propTypes = {
     openDialog: PropTypes.bool.isRequired,
     setOpenDialog: PropTypes.func.isRequired,
 };
 
-export default AddWalletDialog;
+export default AddCategoryDialog;
