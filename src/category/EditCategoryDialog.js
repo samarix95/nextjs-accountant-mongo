@@ -21,51 +21,41 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="down" ref={ref} {...props} />;
 });
 
-const AddCategoryDialog = (props) => {
-    const { openDialog, setOpenDialog } = props;
+const EditCategoryDialog = (props) => {
+    const { openEditDialogData, setOpenEditDialogData } = props;
     const dispatch = useDispatch();
 
-    const [newCategoryName, setNewCategoryName] = React.useState('');
-    const [newCategoryDescription, setNewCategoryDescription] = React.useState('');
-    const [isSpend, setIsSpend] = React.useState(false);
     const [disableDialogButtons, setDisableDialogButtons] = React.useState(false);
-
-    const resetCategoryDialogData = () => {
-        setNewCategoryName('');
-        setNewCategoryDescription('');
-    }
 
     const handleCloseDialog = () => {
         if (!disableDialogButtons) {
-            setOpenDialog(false);
-            resetCategoryDialogData();
+            setOpenEditDialogData({ ...openEditDialogData, openDialog: false });
         }
     };
 
     const handleChangeIsSpend = (event) => {
-        setIsSpend(event.target.checked);
+        setOpenEditDialogData({ ...openEditDialogData, isSpending: event.target.checked });
     }
 
     const handleChangeNewCategoryName = (event) => {
-        setNewCategoryName(event.target.value);
+        setOpenEditDialogData({ ...openEditDialogData, categoryName: event.target.value });
     }
 
     const handleChangeNewCategoryDescribe = (event) => {
-        setNewCategoryDescription(event.target.value);
+        setOpenEditDialogData({ ...openEditDialogData, categoryDescribe: event.target.value });
     }
 
     const handleAddNewCategory = () => {
         setDisableDialogButtons(true);
         axios.request({
-            method: "post",
+            method: "put",
             url: "/api/category",
-            data: { categoryName: newCategoryName, categoryDescription: newCategoryDescription, isSpending: isSpend },
+            data: { id: openEditDialogData.categoryId, categoryName: openEditDialogData.categoryName, categoryDescribe: openEditDialogData.categoryDescribe, isSpending: openEditDialogData.isSpending },
         })
             .then(response => {
                 setDisableDialogButtons(false);
-                setOpenDialog(false);
-                resetCategoryDialogData();
                 dispatch(openSnackbar(true, response.data.message, "success"));
+                setOpenEditDialogData({ ...openEditDialogData, openDialog: false });
                 dispatch(getUserCategories());
             })
             .catch(error => {
@@ -76,23 +66,23 @@ const AddCategoryDialog = (props) => {
 
     return (
         <Dialog
-            open={openDialog}
+            open={openEditDialogData.openDialog}
             TransitionComponent={Transition}
             keepMounted
             onClose={handleCloseDialog}
             aria-describedby="alert-dialog-slide-description"
         >
-            <DialogTitle>Add new category</DialogTitle>
+            <DialogTitle>Edit category</DialogTitle>
             <DialogContent>
                 <Stack spacing={1}>
                     <FormGroup>
-                        <FormControlLabel control={<Checkbox color="default" checked={isSpend} onChange={handleChangeIsSpend} />} label="Is spending" />
+                        <FormControlLabel control={<Checkbox color="default" checked={openEditDialogData.isSpending || false} onChange={handleChangeIsSpend} />} label="Is spending" />
                     </FormGroup>
                     <TextField
                         disabled={disableDialogButtons}
-                        value={newCategoryName}
+                        value={openEditDialogData.categoryName || ''}
                         required
-                        id="Category-name-field"
+                        id="category-name-field"
                         label="Category name"
                         size="small"
                         variant="standard"
@@ -100,9 +90,9 @@ const AddCategoryDialog = (props) => {
                     />
                     <TextField
                         disabled={disableDialogButtons}
-                        value={newCategoryDescription}
-                        id="Category-describe-field"
-                        label="Category description"
+                        value={openEditDialogData.categoryDescribe || ''}
+                        id="category-describe-field"
+                        label="Category describe"
                         size="small"
                         variant="standard"
                         onChange={handleChangeNewCategoryDescribe}
@@ -111,15 +101,15 @@ const AddCategoryDialog = (props) => {
             </DialogContent>
             <DialogActions>
                 <Button disabled={disableDialogButtons} onClick={handleCloseDialog}>Cancel</Button>
-                <Button disabled={disableDialogButtons} onClick={handleAddNewCategory}>Add</Button>
+                <Button disabled={disableDialogButtons} onClick={handleAddNewCategory}>Update</Button>
             </DialogActions>
         </Dialog>
     );
 }
 
-AddCategoryDialog.propTypes = {
-    openDialog: PropTypes.bool.isRequired,
-    setOpenDialog: PropTypes.func.isRequired,
+EditCategoryDialog.propTypes = {
+    openEditDialogData: PropTypes.object.isRequired,
+    setOpenEditDialogData: PropTypes.func.isRequired,
 };
 
-export default AddCategoryDialog;
+export default EditCategoryDialog;

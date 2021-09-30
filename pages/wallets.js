@@ -27,8 +27,8 @@ const Wallets = () => {
     const { userWallets } = state;
 
     const [openAddDialog, setOpenAddDialog] = React.useState(false);
-    const [openDeleteDialogData, setOpenDeleteDialogData] = React.useState({ openDialog: false, walletId: '', walletName: '' });
     const [openEditDialogData, setOpenEditDialogData] = React.useState({ openDialog: false, walletId: '', walletName: '', walletDescribe: '' });
+    const [openDeleteDialogData, setOpenDeleteDialogData] = React.useState({ openDialog: false, walletId: '', walletName: '' });
 
     const handleAddWallet = () => {
         setOpenAddDialog(true);
@@ -45,8 +45,8 @@ const Wallets = () => {
     return (
         <Container maxWidth="sm">
             <AddWalletDialog openDialog={openAddDialog} setOpenDialog={setOpenAddDialog} />
-            <DeleteWalletDialog openDeleteDialogData={openDeleteDialogData} setOpenDeleteDialogData={setOpenDeleteDialogData} />
             <EditWalletDialog openEditDialogData={openEditDialogData} setOpenEditDialogData={setOpenEditDialogData} />
+            <DeleteWalletDialog openDeleteDialogData={openDeleteDialogData} setOpenDeleteDialogData={setOpenDeleteDialogData} />
             <Box sx={{ my: 4 }}>
                 {userWallets.loading
                     ? <Stack sx={{ display: 'flex', height: 200, alignItems: 'center', justifyContent: 'center', }}>

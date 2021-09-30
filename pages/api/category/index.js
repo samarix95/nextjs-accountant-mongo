@@ -92,6 +92,62 @@ handler.post(async (req, res) => {
     }
 });
 
+handler.put(async (req, res) => {
+    const session = await getSession({ req });
+
+    if (!session) {
+        return res.status(401).json({ message: "You're not autorized" });
+    }
+
+    const { id, categoryName, categoryDescribe, isSpending } = req.body;
+    const userId = session.user.id;
+
+    if (id === null) {
+        return res.status(404).json({ message: "Nothing to update" });
+    }
+
+    if (categoryName === null) {
+        return res.status(400).json({ message: "Category name is required" });
+    }
+
+    if (categoryName.length === 0) {
+        return res.status(400).json({ message: "Category name is required" });
+    }
+
+    // Try to find exist user category
+    try {
+        const category = await req.db.collection('categories').findOne({ userId: userId, _id: ObjectId(id) });
+        if (category === null) {
+            return res.status(404).json({
+                message: "Nothing to update",
+            });
+        }
+    } catch (error) {
+        return res.status(500).json({
+            message: new Error(error).message,
+        });
+    }
+
+    // Update category
+    try {
+        await req.db.collection('categories').updateOne({ _id: ObjectId(id), userId: userId }, {
+            $set: {
+                name: categoryName,
+                describe: categoryDescribe === null ? '' : categoryDescribe,
+                isSpending: isSpending,
+            }
+        });
+
+        return res.status(200).json({
+            message: `Category was updated`,
+        })
+    } catch (error) {
+        return res.status(500).json({
+            message: new Error(error).message,
+        });
+    }
+});
+
 handler.delete(async (req, res) => {
     const session = await getSession({ req });
 

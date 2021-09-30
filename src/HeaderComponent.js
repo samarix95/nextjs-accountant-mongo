@@ -62,7 +62,7 @@ const HeaderComponent = (props) => {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [openPooper, setOpenPooper] = React.useState(false);
     const [currentWallet, setCurrentWallet] = React.useState('all');
-    const [selectedDrawerIndex, setSelectedDrawerIndex] = React.useState(1);
+    const [selectedDrawerIndex, setSelectedDrawerIndex] = React.useState(router.pathname);
 
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
