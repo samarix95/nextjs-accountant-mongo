@@ -55,18 +55,14 @@ const HeaderComponent = (props) => {
     const state = useSelector((state) => state);
     const { userWallets } = state;
     const router = useRouter();
+    const dispatch = useDispatch();
 
     const [openDialog, setOpenDialog] = React.useState(false);
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [openPooper, setOpenPooper] = React.useState(false);
     const [currentWallet, setCurrentWallet] = React.useState('all');
-
-    const dispatch = useDispatch();
-
-    React.useEffect(() => {
-        dispatch(getUserWallets());
-    }, [])
+    const [selectedDrawerIndex, setSelectedDrawerIndex] = React.useState(1);
 
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
@@ -98,6 +94,14 @@ const HeaderComponent = (props) => {
         setOpenDialog(true);
     }
 
+    const handleListItemClick = (index) => {
+        setSelectedDrawerIndex(index);
+    };
+
+    React.useEffect(() => {
+        dispatch(getUserWallets());
+    }, [])
+
     if (loading) {
         return <p>Loading...</p>
     }
@@ -107,19 +111,40 @@ const HeaderComponent = (props) => {
             <Toolbar />
             <Divider />
             <List sx={{ flexGrow: 1 }}>
-                <ListItem button component={Link} noLinkStyle href="/">
+                <ListItem
+                    button
+                    component={Link}
+                    noLinkStyle
+                    href="/"
+                    selected={selectedDrawerIndex === "/"}
+                    onClick={() => handleListItemClick("/")}
+                >
                     <ListItemIcon>
                         <HomeIcon />
                     </ListItemIcon>
                     <ListItemText primary={pages["/"]} />
                 </ListItem>
-                <ListItem button component={Link} noLinkStyle href="/wallets">
+                <ListItem
+                    button
+                    component={Link}
+                    noLinkStyle
+                    href="/wallets"
+                    selected={selectedDrawerIndex === "/wallets"}
+                    onClick={() => handleListItemClick("/wallets")}
+                >
                     <ListItemIcon>
                         <AccountBalanceWalletIcon />
                     </ListItemIcon>
                     <ListItemText primary={pages["/wallets"]} />
                 </ListItem>
-                <ListItem button component={Link} noLinkStyle href="/categories">
+                <ListItem
+                    button
+                    component={Link}
+                    noLinkStyle
+                    href="/categories"
+                    selected={selectedDrawerIndex === "/categories"}
+                    onClick={() => handleListItemClick("/categories")}
+                >
                     <ListItemIcon>
                         <DehazeIcon />
                     </ListItemIcon>
@@ -128,7 +153,14 @@ const HeaderComponent = (props) => {
             </List>
             <Divider />
             <List >
-                <ListItem button component={Link} noLinkStyle href="/about">
+                <ListItem
+                    button
+                    component={Link}
+                    noLinkStyle
+                    href="/about"
+                    selected={selectedDrawerIndex === "/about"}
+                    onClick={() => handleListItemClick("/about")}
+                >
                     <ListItemIcon>
                         <InfoIcon />
                     </ListItemIcon>

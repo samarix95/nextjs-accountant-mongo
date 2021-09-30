@@ -52,7 +52,7 @@ handler.post(async (req, res) => {
 
     // Try to find exist user wallets
     try {
-        const wallets = await req.db.collection('wallets').findOne({ userId: userId, name: walletName });
+        const wallets = await req.db.collection('wallets').findOne({ userId: userId, name: walletName, isDeleted: false });
         if (wallets !== null) {
             return res.status(400).json({
                 message: `You have wallet '${walletName}'`,

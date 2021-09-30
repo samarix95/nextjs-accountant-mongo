@@ -13,6 +13,9 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import Slide from '@mui/material/Slide';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="down" ref={ref} {...props} />;
@@ -23,12 +26,13 @@ const AddCategoryDialog = (props) => {
     const dispatch = useDispatch();
 
     const [newCategoryName, setNewCategoryName] = React.useState('');
-    const [newCategoryDescribe, setNewCategoryDescribe] = React.useState('');
+    const [newCategoryDescription, setNewCategoryDescription] = React.useState('');
+    const [isSpend, setIsSpend] = React.useState(false);
     const [disableDialogButtons, setDisableDialogButtons] = React.useState(false);
 
     const resetCategoryDialogData = () => {
         setNewCategoryName('');
-        setNewCategoryDescribe('');
+        setNewCategoryDescription('');
     }
 
     const handleCloseDialog = () => {
@@ -43,7 +47,11 @@ const AddCategoryDialog = (props) => {
     }
 
     const handleChangeNewCategoryDescribe = (event) => {
-        setNewCategoryDescribe(event.target.value);
+        setNewCategoryDescription(event.target.value);
+    }
+
+    const handleChangeIsSpend = (event) => {
+        setIsSpend(event.target.checked);
     }
 
     const handleAddNewCategory = () => {
@@ -51,7 +59,7 @@ const AddCategoryDialog = (props) => {
         axios.request({
             method: "post",
             url: "/api/category",
-            data: { CategoryName: newCategoryName, CategoryDescribe: newCategoryDescribe },
+            data: { categoryName: newCategoryName, categoryDescription: newCategoryDescription, isSpending: isSpend },
         })
             .then(response => {
                 setDisableDialogButtons(false);
@@ -77,6 +85,9 @@ const AddCategoryDialog = (props) => {
             <DialogTitle>Add new category</DialogTitle>
             <DialogContent>
                 <Stack spacing={1}>
+                    <FormGroup>
+                        <FormControlLabel control={<Checkbox color="default" checked={isSpend} onChange={handleChangeIsSpend} />} label="Is spending" />
+                    </FormGroup>
                     <TextField
                         disabled={disableDialogButtons}
                         value={newCategoryName}
@@ -89,9 +100,9 @@ const AddCategoryDialog = (props) => {
                     />
                     <TextField
                         disabled={disableDialogButtons}
-                        value={newCategoryDescribe}
+                        value={newCategoryDescription}
                         id="Category-describe-field"
-                        label="Category describe"
+                        label="Category description"
                         size="small"
                         variant="standard"
                         onChange={handleChangeNewCategoryDescribe}

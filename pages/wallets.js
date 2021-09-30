@@ -60,10 +60,10 @@ const Wallets = () => {
                             {userWallets.data.map(item =>
                                 <Card key={item._id} variant="outlined">
                                     <CardContent>
-                                        <Typography variant="h6" gutterBottom>
+                                        <Typography variant="subtitle2" gutterBottom>
                                             {item.name}
                                         </Typography>
-                                        <Typography color="text.secondary">
+                                        <Typography variant="body2" color="text.secondary">
                                             {item.describe}
                                         </Typography>
                                     </CardContent>

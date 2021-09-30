@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getUserCategories } from '../actions';
 
 import AddCategoryDialog from '../src/category/AddCategoryDialog';
+import DeleteCategoryDialog from '../src/category/DeleteCategoryDialog';
 import ProTip from '../src/ProTip';
 import Copyright from '../src/Copyright';
 
@@ -50,6 +51,7 @@ const Categories = () => {
     return (
         <Container maxWidth="sm">
             <AddCategoryDialog openDialog={openAddDialog} setOpenDialog={setOpenAddDialog} />
+            <DeleteCategoryDialog openDeleteDialogData={openDeleteDialogData} setOpenDeleteDialogData={setOpenDeleteDialogData} />
             <Box sx={{ my: 4 }}>
                 {userCategories.loading
                     ? <Stack sx={{ display: 'flex', height: 200, alignItems: 'center', justifyContent: 'center', }}>
@@ -59,25 +61,55 @@ const Categories = () => {
                         </Typography>
                     </Stack>
                     : <Box sx={{ p: 1 }}>
-                        <Stack spacing={1}>
-                            {userCategories.data.map(item =>
-                                <Card key={item._id} variant="outlined">
-                                    <CardContent>
-                                        <Typography variant="h6" gutterBottom>
-                                            {item.name}
-                                        </Typography>
-                                        <Typography color="text.secondary">
-                                            {item.describe}
-                                        </Typography>
-                                    </CardContent>
-                                    <CardActions>
-                                        <Stack direction="row" spacing={1}>
-                                            <Button size="small" color="inherit" startIcon={<EditIcon />} onClick={() => handleEditCategory(item._id, item.name, item.describe)}>Edit</Button>
-                                            <Button size="small" color="inherit" startIcon={<DeleteIcon />} onClick={() => handleDeleteCategory(item._id, item.name)}>Delete</Button>
-                                        </Stack>
-                                    </CardActions>
-                                </Card>
-                            )}
+                        <Stack spacing={1} direction={{ xs: 'column', sm: 'row' }} >
+                            <Stack spacing={1} >
+                                <Typography variant="h6">Incomings</Typography>
+                                {userCategories.data
+                                    .sort((a, b) => Number(a.isSpending) - Number(b.isSpending) || a.name.localeCompare(b.name))
+                                    .filter(category => !category.isSpending)
+                                    .map(item =>
+                                        <Card key={item._id} variant="outlined">
+                                            <CardContent>
+                                                <Typography variant="subtitle2" gutterBottom>
+                                                    {item.name}
+                                                </Typography>
+                                                <Typography variant="body2" color="text.secondary">
+                                                    {item.describe}
+                                                </Typography>
+                                            </CardContent>
+                                            <CardActions>
+                                                <Stack direction="row" spacing={1}>
+                                                    <Button size="small" color="inherit" startIcon={<EditIcon />} onClick={() => handleEditCategory(item._id, item.name, item.describe)}>Edit</Button>
+                                                    <Button size="small" color="inherit" startIcon={<DeleteIcon />} onClick={() => handleDeleteCategory(item._id, item.name)}>Delete</Button>
+                                                </Stack>
+                                            </CardActions>
+                                        </Card>
+                                    )}
+                            </Stack>
+                            <Stack spacing={1} >
+                                <Typography variant="h6">Outgoings</Typography>
+                                {userCategories.data
+                                    .sort((a, b) => Number(a.isSpending) - Number(b.isSpending) || a.name.localeCompare(b.name))
+                                    .filter(category => category.isSpending)
+                                    .map(item =>
+                                        <Card key={item._id} variant="outlined">
+                                            <CardContent>
+                                                <Typography variant="subtitle2" gutterBottom>
+                                                    {item.name}
+                                                </Typography>
+                                                <Typography variant="body2" color="text.secondary">
+                                                    {item.describe}
+                                                </Typography>
+                                            </CardContent>
+                                            <CardActions>
+                                                <Stack direction="row" spacing={1}>
+                                                    <Button size="small" color="inherit" startIcon={<EditIcon />} onClick={() => handleEditCategory(item._id, item.name, item.describe)}>Edit</Button>
+                                                    <Button size="small" color="inherit" startIcon={<DeleteIcon />} onClick={() => handleDeleteCategory(item._id, item.name)}>Delete</Button>
+                                                </Stack>
+                                            </CardActions>
+                                        </Card>
+                                    )}
+                            </Stack>
                         </Stack>
                         <Box sx={{ p: 1, display: 'flex', justifyContent: 'center' }}>
                             <Button color="inherit" size="large" startIcon={<AddBoxIcon />} onClick={handleAddCategory}>

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
 
-import { openSnackbar, getUserWallets } from '../../actions';
+import { openSnackbar, getUserCategories } from '../../actions';
 
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -15,7 +15,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="down" ref={ref} {...props} />;
 });
 
-const DeleteWalletDialog = (props) => {
+const DeleteCategoryDialog = (props) => {
     const { openDeleteDialogData, setOpenDeleteDialogData } = props;
     const dispatch = useDispatch();
 
@@ -27,18 +27,18 @@ const DeleteWalletDialog = (props) => {
         }
     };
 
-    const handleDeleteWallet = () => {
+    const handleDeleteCategory = () => {
         setDisableDialogButtons(true);
         axios.request({
             method: "delete",
-            url: "/api/wallet",
-            data: { id: openDeleteDialogData.walletId },
+            url: "/api/category",
+            data: { id: openDeleteDialogData.categoryId },
         })
             .then(response => {
                 setDisableDialogButtons(false);
                 dispatch(openSnackbar(true, response.data.message, "success"));
                 setOpenDeleteDialogData({ ...openDeleteDialogData, openDialog: false });
-                dispatch(getUserWallets());
+                dispatch(getUserCategories());
             })
             .catch(error => {
                 setDisableDialogButtons(false);
@@ -54,18 +54,18 @@ const DeleteWalletDialog = (props) => {
             onClose={handleCloseDialog}
             aria-describedby="alert-dialog-slide-description"
         >
-            <DialogTitle>Do you want to delete wallet "{openDeleteDialogData.walletName}"?</DialogTitle>
+            <DialogTitle>Do you want to delete category "{openDeleteDialogData.categoryName}"?</DialogTitle>
             <DialogActions>
                 <Button disabled={disableDialogButtons} onClick={handleCloseDialog}>Cancel</Button>
-                <Button disabled={disableDialogButtons} onClick={handleDeleteWallet}>Delete</Button>
+                <Button disabled={disableDialogButtons} onClick={handleDeleteCategory}>Delete</Button>
             </DialogActions>
         </Dialog>
     );
 }
 
-DeleteWalletDialog.propTypes = {
+DeleteCategoryDialog.propTypes = {
     openDeleteDialogData: PropTypes.object.isRequired,
     setOpenDeleteDialogData: PropTypes.func.isRequired,
 };
 
-export default DeleteWalletDialog;
+export default DeleteCategoryDialog;
