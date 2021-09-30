@@ -1,13 +1,13 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import { signIn, signOut, useSession } from 'next-auth/client';
-import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
 
 import SnackbarComponent from './global/Snackbar';
-import { openSnackbar, getUserWallets } from '../actions'
+import { getUserWallets } from '../actions';
 import Link from './Link';
+import AddWalletDialog from './wallet/AddWalletDialog';
 
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -29,12 +29,6 @@ import Paper from '@mui/material/Paper';
 import ClickAwayListener from "@mui/material/ClickAwayListener";
 import Container from "@mui/material/Container";
 import CircularProgress from '@mui/material/CircularProgress';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import Slide from '@mui/material/Slide';
-import TextField from '@mui/material/TextField';
 import Stack from '@mui/material/Stack';
 
 import InboxIcon from '@mui/icons-material/Inbox';
@@ -50,11 +44,8 @@ const drawerWidth = 240;
 const pages = {
     "/": "Home",
     "/about": "About",
+    "/wallets": "My wallets",
 }
-
-const Transition = React.forwardRef(function Transition(props, ref) {
-    return <Slide direction="down" ref={ref} {...props} />;
-});
 
 const HeaderComponent = (props) => {
     const { window } = props;
@@ -63,14 +54,11 @@ const HeaderComponent = (props) => {
     const { userWallets } = state;
     const router = useRouter();
 
+    const [openDialog, setOpenDialog] = React.useState(false);
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [openPooper, setOpenPooper] = React.useState(false);
     const [currentWallet, setCurrentWallet] = React.useState('all');
-    const [openDialog, setOpenDialog] = React.useState(false);
-    const [newWalletName, setNewWalletName] = React.useState('');
-    const [newWalletDescribe, setNewWalletDescribe] = React.useState('');
-    const [disableDialogButtons, setDisableDialogButtons] = React.useState(false);
 
     const dispatch = useDispatch();
 
@@ -108,43 +96,6 @@ const HeaderComponent = (props) => {
         setOpenDialog(true);
     }
 
-    const handleCloseDialog = () => {
-        if (!disableDialogButtons) {
-            setNewWalletName('');
-            setNewWalletDescribe('');
-            setOpenDialog(false);
-        }
-    };
-
-    const handleChangeNewWalletName = (event) => {
-        setNewWalletName(event.target.value);
-    }
-
-    const handleChangeNewWalletDescribe = (event) => {
-        setNewWalletDescribe(event.target.value);
-    }
-
-    const handleAddNewWallet = () => {
-        setDisableDialogButtons(true);
-        axios.request({
-            method: "post",
-            url: "/api/wallet",
-            data: { walletName: newWalletName, walletDescribe: newWalletDescribe },
-        })
-            .then(response => {
-                setDisableDialogButtons(false);
-                setNewWalletName('');
-                setNewWalletDescribe('');
-                dispatch(openSnackbar(true, response.data.message, "success"));
-                setOpenDialog(false);
-                dispatch(getUserWallets());
-            })
-            .catch(error => {
-                setDisableDialogButtons(false);
-                dispatch(openSnackbar(true, error.response.data.message, "error"));
-            });
-    }
-
     if (loading) {
         return <p>Loading...</p>
     }
@@ -159,6 +110,12 @@ const HeaderComponent = (props) => {
                         <HomeIcon />
                     </ListItemIcon>
                     <ListItemText primary={pages["/"]} />
+                </ListItem>
+                <ListItem button component={Link} noLinkStyle href="/wallets">
+                    <ListItemIcon>
+                        <AccountBalanceWalletIcon />
+                    </ListItemIcon>
+                    <ListItemText primary={pages["/wallets"]} />
                 </ListItem>
             </List>
             <Divider />
@@ -178,42 +135,7 @@ const HeaderComponent = (props) => {
     return (
         <React.Fragment>
             <SnackbarComponent />
-            <Dialog
-                open={openDialog}
-                TransitionComponent={Transition}
-                keepMounted
-                onClose={handleCloseDialog}
-                aria-describedby="alert-dialog-slide-description"
-            >
-                <DialogTitle>Add new wallet</DialogTitle>
-                <DialogContent>
-                    <Stack spacing={1}>
-                        <TextField
-                            disabled={disableDialogButtons}
-                            value={newWalletName}
-                            required
-                            id="wallet-name-field"
-                            label="Wallet name"
-                            size="small"
-                            variant="standard"
-                            onChange={handleChangeNewWalletName}
-                        />
-                        <TextField
-                            disabled={disableDialogButtons}
-                            value={newWalletDescribe}
-                            id="wallet-describe-field"
-                            label="Wallet describe"
-                            size="small"
-                            variant="standard"
-                            onChange={handleChangeNewWalletDescribe}
-                        />
-                    </Stack>
-                </DialogContent>
-                <DialogActions>
-                    <Button disabled={disableDialogButtons} onClick={handleCloseDialog}>Cancel</Button>
-                    <Button disabled={disableDialogButtons} onClick={handleAddNewWallet}>Add</Button>
-                </DialogActions>
-            </Dialog>
+            <AddWalletDialog openDialog={openDialog} setOpenDialog={setOpenDialog} />
             <Popper transition
                 open={openPooper}
                 anchorEl={anchorEl}
