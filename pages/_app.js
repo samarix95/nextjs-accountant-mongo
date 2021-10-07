@@ -27,7 +27,7 @@ const MyApp = (props) => {
             <Provider session={pageProps.session}>
                 <CacheProvider value={emotionCache}>
                     <Head>
-                        <title>My page</title>
+                        <title>Accountant</title>
                         <meta name="viewport" content="initial-scale=1, width=device-width" />
                     </Head>
                     <ThemeProvider theme={theme}>

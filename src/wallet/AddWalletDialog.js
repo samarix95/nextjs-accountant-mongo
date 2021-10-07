@@ -13,6 +13,8 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import Slide from '@mui/material/Slide';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="down" ref={ref} {...props} />;
@@ -21,6 +23,8 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 const AddWalletDialog = (props) => {
     const { openDialog, setOpenDialog } = props;
     const dispatch = useDispatch();
+    const theme = useTheme();
+    const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
     const [newWalletName, setNewWalletName] = React.useState('');
     const [newWalletDescription, setNewWalletDescription] = React.useState('');
@@ -68,6 +72,7 @@ const AddWalletDialog = (props) => {
 
     return (
         <Dialog
+            fullScreen={fullScreen}
             open={openDialog}
             TransitionComponent={Transition}
             keepMounted
@@ -96,13 +101,13 @@ const AddWalletDialog = (props) => {
                         variant="standard"
                         onChange={handleChangeNewWalletDescription}
                         multiline
-                        rows={3}
+                        rows={2}
                     />
                 </Stack>
             </DialogContent>
             <DialogActions>
-                <Button disabled={disableDialogButtons} onClick={handleCloseDialog}>Cancel</Button>
-                <Button disabled={disableDialogButtons} onClick={handleAddNewWallet}>Add</Button>
+                <Button disabled={disableDialogButtons} size="small" variant="text" onClick={handleCloseDialog}>Cancel</Button>
+                <Button disabled={disableDialogButtons} size="small" variant="contained" onClick={handleAddNewWallet}>Add</Button>
             </DialogActions>
         </Dialog>
     );

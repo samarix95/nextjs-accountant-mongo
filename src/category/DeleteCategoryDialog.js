@@ -56,8 +56,8 @@ const DeleteCategoryDialog = (props) => {
         >
             <DialogTitle>Do you want to delete category "{openDeleteDialogData.categoryName}"?</DialogTitle>
             <DialogActions>
-                <Button disabled={disableDialogButtons} onClick={handleCloseDialog}>Cancel</Button>
-                <Button disabled={disableDialogButtons} onClick={handleDeleteCategory}>Delete</Button>
+                <Button disabled={disableDialogButtons} size="small" variant="text" onClick={handleCloseDialog}>Cancel</Button>
+                <Button disabled={disableDialogButtons} size="small" variant="contained" onClick={handleDeleteCategory}>Delete</Button>
             </DialogActions>
         </Dialog>
     );

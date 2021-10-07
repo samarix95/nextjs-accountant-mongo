@@ -56,8 +56,8 @@ const DeleteWalletDialog = (props) => {
         >
             <DialogTitle>Do you want to delete wallet "{openDeleteDialogData.walletName}"?</DialogTitle>
             <DialogActions>
-                <Button disabled={disableDialogButtons} onClick={handleCloseDialog}>Cancel</Button>
-                <Button disabled={disableDialogButtons} onClick={handleDeleteWallet}>Delete</Button>
+                <Button disabled={disableDialogButtons} size="small" variant="text" onClick={handleCloseDialog}>Cancel</Button>
+                <Button disabled={disableDialogButtons} size="small" variant="contained" onClick={handleDeleteWallet}>Delete</Button>
             </DialogActions>
         </Dialog>
     );

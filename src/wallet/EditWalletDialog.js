@@ -13,6 +13,8 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import Slide from '@mui/material/Slide';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="down" ref={ref} {...props} />;
@@ -21,6 +23,8 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 const EditWalletDialog = (props) => {
     const { openEditDialogData, setOpenEditDialogData } = props;
     const dispatch = useDispatch();
+    const theme = useTheme();
+    const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
     const [disableDialogButtons, setDisableDialogButtons] = React.useState(false);
 
@@ -59,6 +63,7 @@ const EditWalletDialog = (props) => {
 
     return (
         <Dialog
+            fullScreen={fullScreen}
             open={openEditDialogData.openDialog}
             TransitionComponent={Transition}
             keepMounted
@@ -87,13 +92,13 @@ const EditWalletDialog = (props) => {
                         variant="standard"
                         onChange={handleChangeNewWalletDescription}
                         multiline
-                        rows={3}
+                        rows={2}
                     />
                 </Stack>
             </DialogContent>
             <DialogActions>
-                <Button disabled={disableDialogButtons} onClick={handleCloseDialog}>Cancel</Button>
-                <Button disabled={disableDialogButtons} onClick={handleAddNewWallet}>Update</Button>
+                <Button disabled={disableDialogButtons} size="small" variant="text" onClick={handleCloseDialog}>Cancel</Button>
+                <Button disabled={disableDialogButtons} size="small" variant="contained" onClick={handleAddNewWallet}>Update</Button>
             </DialogActions>
         </Dialog>
     );

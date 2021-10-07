@@ -16,6 +16,8 @@ import Slide from '@mui/material/Slide';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="down" ref={ref} {...props} />;
@@ -24,6 +26,8 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 const EditCategoryDialog = (props) => {
     const { openEditDialogData, setOpenEditDialogData } = props;
     const dispatch = useDispatch();
+    const theme = useTheme();
+    const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
     const [disableDialogButtons, setDisableDialogButtons] = React.useState(false);
 
@@ -66,6 +70,7 @@ const EditCategoryDialog = (props) => {
 
     return (
         <Dialog
+            fullScreen={fullScreen}
             open={openEditDialogData.openDialog}
             TransitionComponent={Transition}
             keepMounted
@@ -97,13 +102,13 @@ const EditCategoryDialog = (props) => {
                         variant="standard"
                         onChange={handleChangeNewCategoryDescription}
                         multiline
-                        rows={3}
+                        rows={2}
                     />
                 </Stack>
             </DialogContent>
             <DialogActions>
-                <Button disabled={disableDialogButtons} onClick={handleCloseDialog}>Cancel</Button>
-                <Button disabled={disableDialogButtons} onClick={handleAddNewCategory}>Update</Button>
+                <Button disabled={disableDialogButtons} size="small" variant="text" onClick={handleCloseDialog}>Cancel</Button>
+                <Button disabled={disableDialogButtons} size="small" variant="contained" onClick={handleAddNewCategory}>Update</Button>
             </DialogActions>
         </Dialog>
     );

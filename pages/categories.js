@@ -26,12 +26,12 @@ const Categories = () => {
 
     const { userCategories } = state;
 
-    const [openAddDialog, setOpenAddDialog] = React.useState(false);
+    const [openAddDialogData, setOpenAddDialogData] = React.useState({ openDialog: false, categoryName: '', isSpending: false });
     const [openEditDialogData, setOpenEditDialogData] = React.useState({ openDialog: false, categoryId: '', categoryName: '', categoryDescription: '', isSpending: false });
     const [openDeleteDialogData, setOpenDeleteDialogData] = React.useState({ openDialog: false, categoryId: '', categoryName: '' });
 
     const handleAddCategory = () => {
-        setOpenAddDialog(true);
+        setOpenAddDialogData({ ...openAddDialogData, openDialog: true, isSpending: false });
     }
 
     const handleEditCategory = (id, name, description, spending) => {
@@ -44,7 +44,7 @@ const Categories = () => {
 
     return (
         <Container maxWidth="sm">
-            <AddCategoryDialog openDialog={openAddDialog} setOpenDialog={setOpenAddDialog} />
+            <AddCategoryDialog openAddDialogData={openAddDialogData} setOpenAddDialogData={setOpenAddDialogData} />
             <EditCategoryDialog openEditDialogData={openEditDialogData} setOpenEditDialogData={setOpenEditDialogData} />
             <DeleteCategoryDialog openDeleteDialogData={openDeleteDialogData} setOpenDeleteDialogData={setOpenDeleteDialogData} />
             <Box sx={{ my: 4 }}>
@@ -74,7 +74,7 @@ const Categories = () => {
                                             </CardContent>
                                             <CardActions>
                                                 <Stack direction="row" spacing={1}>
-                                                    <Button size="small" color="inherit" startIcon={<EditIcon />} onClick={() => handleEditCategory(item._id, item.name, item.description)}>Edit</Button>
+                                                    <Button size="small" color="inherit" startIcon={<EditIcon />} onClick={() => handleEditCategory(item._id, item.name, item.description, item.isSpending)}>Edit</Button>
                                                     <Button size="small" color="inherit" startIcon={<DeleteIcon />} onClick={() => handleDeleteCategory(item._id, item.name)}>Delete</Button>
                                                 </Stack>
                                             </CardActions>

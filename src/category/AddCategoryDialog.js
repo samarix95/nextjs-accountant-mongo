@@ -16,38 +16,39 @@ import Slide from '@mui/material/Slide';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="down" ref={ref} {...props} />;
 });
 
 const AddCategoryDialog = (props) => {
-    const { openDialog, setOpenDialog } = props;
+    const { openAddDialogData, setOpenAddDialogData } = props;
     const dispatch = useDispatch();
+    const theme = useTheme();
+    const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
-    const [newCategoryName, setNewCategoryName] = React.useState('');
     const [newCategoryDescription, setNewCategoryDescription] = React.useState('');
-    const [isSpend, setIsSpend] = React.useState(false);
     const [disableDialogButtons, setDisableDialogButtons] = React.useState(false);
 
     const resetCategoryDialogData = () => {
-        setNewCategoryName('');
         setNewCategoryDescription('');
     }
 
     const handleCloseDialog = () => {
         if (!disableDialogButtons) {
-            setOpenDialog(false);
+            setOpenAddDialogData({ ...openAddDialogData, openDialog: false });
             resetCategoryDialogData();
         }
     };
 
     const handleChangeIsSpend = (event) => {
-        setIsSpend(event.target.checked);
+        setOpenAddDialogData({ ...openAddDialogData, isSpending: event.target.checked });
     }
 
     const handleChangeNewCategoryName = (event) => {
-        setNewCategoryName(event.target.value);
+        setOpenAddDialogData({ ...openAddDialogData, categoryName: event.target.value });
     }
 
     const handleChangeNewCategoryDescription = (event) => {
@@ -59,11 +60,11 @@ const AddCategoryDialog = (props) => {
         axios.request({
             method: "post",
             url: "/api/category",
-            data: { categoryName: newCategoryName, categoryDescription: newCategoryDescription, isSpending: isSpend },
+            data: { categoryName: openAddDialogData.categoryName, categoryDescription: newCategoryDescription, isSpending: openAddDialogData.isSpending },
         })
             .then(response => {
                 setDisableDialogButtons(false);
-                setOpenDialog(false);
+                setOpenAddDialogData({ ...openAddDialogData, openDialog: false });
                 resetCategoryDialogData();
                 dispatch(openSnackbar(true, response.data.message, "success"));
                 dispatch(getUserCategories());
@@ -76,7 +77,8 @@ const AddCategoryDialog = (props) => {
 
     return (
         <Dialog
-            open={openDialog}
+            fullScreen={fullScreen}
+            open={openAddDialogData.openDialog}
             TransitionComponent={Transition}
             keepMounted
             onClose={handleCloseDialog}
@@ -86,11 +88,11 @@ const AddCategoryDialog = (props) => {
             <DialogContent>
                 <Stack spacing={1}>
                     <FormGroup>
-                        <FormControlLabel control={<Checkbox color="default" checked={isSpend} onChange={handleChangeIsSpend} />} label="Is spending" />
+                        <FormControlLabel control={<Checkbox color="default" checked={openAddDialogData.isSpending} onChange={handleChangeIsSpend} />} label="Is spending" />
                     </FormGroup>
                     <TextField
                         disabled={disableDialogButtons}
-                        value={newCategoryName}
+                        value={openAddDialogData.categoryName || ''}
                         required
                         id="Category-name-field"
                         label="Category name"
@@ -107,21 +109,21 @@ const AddCategoryDialog = (props) => {
                         variant="standard"
                         onChange={handleChangeNewCategoryDescription}
                         multiline
-                        rows={3}
+                        rows={2}
                     />
                 </Stack>
             </DialogContent>
             <DialogActions>
-                <Button disabled={disableDialogButtons} onClick={handleCloseDialog}>Cancel</Button>
-                <Button disabled={disableDialogButtons} onClick={handleAddNewCategory}>Add</Button>
+                <Button disabled={disableDialogButtons} size="small" variant="text" onClick={handleCloseDialog}>Cancel</Button>
+                <Button disabled={disableDialogButtons} size="small" variant="contained" onClick={handleAddNewCategory}>Add</Button>
             </DialogActions>
         </Dialog>
     );
 }
 
 AddCategoryDialog.propTypes = {
-    openDialog: PropTypes.bool.isRequired,
-    setOpenDialog: PropTypes.func.isRequired,
+    openAddDialogData: PropTypes.object.isRequired,
+    setOpenAddDialogData: PropTypes.func.isRequired,
 };
 
 export default AddCategoryDialog;
