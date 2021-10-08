@@ -74,3 +74,34 @@ const getCategoryError = error => ({
     type: types.GET_CATEGORY_ERROR,
     payload: { error }
 })
+
+// Get user balances
+export const getUserBalances = () => {
+    return dispatch => {
+        dispatch(getBalancePending());
+        axios.request({
+            method: "get",
+            url: "/api/balance",
+        })
+            .then(response => {
+                dispatch(getBalanceSuccess(response.data));
+            })
+            .catch(error => {
+                dispatch(getBalanceError(error));
+            });
+    };
+}
+
+const getBalancePending = () => ({
+    type: types.GET_BALANCE_PENDING
+})
+
+const getBalanceSuccess = balances => ({
+    type: types.GET_BALANCE_SUCCESS,
+    payload: { ...balances }
+})
+
+const getBalanceError = error => ({
+    type: types.GET_BALANCE_ERROR,
+    payload: { error }
+})

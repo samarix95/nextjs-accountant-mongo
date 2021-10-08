@@ -4,7 +4,7 @@ import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import enLocale from 'date-fns/locale/en-US';
 
-import { openSnackbar, getUserCategories } from '../../actions';
+import { openSnackbar, getUserBalances } from '../../actions';
 
 import AddCategoryDialog from '../category/AddCategoryDialog';
 
@@ -91,13 +91,23 @@ const AddBudgetDialog = (props) => {
             dispatch(openSnackbar(true, "Select category", "error"));
             return;
         }
-        const data = {
-            date: dateValue,
-            categoryId: selectedCategory._id,
-            value: value,
-            comment: comment,
-        }
-        console.log(data);
+        setDisableDialogButtons(true);
+        axios.request({
+            method: "post",
+            url: "/api/balance",
+            data: { date: dateValue, categoryId: selectedCategory._id, value: value, comment: comment, },
+        })
+            .then(response => {
+                setDisableDialogButtons(false);
+                setOpenAddBudgetDialogData({ ...openAddBudgetDialogData, openDialog: false });
+                resetBudgetDialogData();
+                dispatch(openSnackbar(true, response.data.message, "success"));
+                dispatch(getUserBalances());
+            })
+            .catch(error => {
+                setDisableDialogButtons(false);
+                dispatch(openSnackbar(true, error.response.data.message, "error"));
+            });
     }
 
     return (

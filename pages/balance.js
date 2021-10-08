@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useSelector } from 'react-redux';
 
 import ProTip from '../src/ProTip';
 import Copyright from '../src/Copyright';
@@ -14,8 +15,11 @@ import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOu
 import RemoveCircleOutlineOutlinedIcon from '@mui/icons-material/RemoveCircleOutlineOutlined';
 
 const Balance = () => {
-    const [openAddBudgetDialogData, setOpenAddBudgetDialogData] = React.useState({ openDialog: false, budgetType: '', isSpending: false });
+    const state = useSelector((state) => state);
+    const { userBalances } = state;
 
+    const [openAddBudgetDialogData, setOpenAddBudgetDialogData] = React.useState({ openDialog: false, budgetType: '', isSpending: false });
+    console.log(userBalances.data)
     const handleOpenAddBudget = (type) => {
         setOpenAddBudgetDialogData({
             openDialog: true,

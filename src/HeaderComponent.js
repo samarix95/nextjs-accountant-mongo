@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
 
 import SnackbarComponent from './global/Snackbar';
-import { getUserWallets, getUserCategories } from '../actions';
+import { getUserWallets, getUserCategories, getUserBalances } from '../actions';
 import Link from './Link';
 import AddWalletDialog from './wallet/AddWalletDialog';
 
@@ -105,6 +105,7 @@ const HeaderComponent = (props) => {
     React.useEffect(() => {
         dispatch(getUserWallets());
         dispatch(getUserCategories());
+        dispatch(getUserBalances());
     }, [])
 
     if (loading) {

@@ -95,11 +95,45 @@ const userCategoriesReducer = (state = initialUserCategoriesState, { type, paylo
     }
 }
 
+// Initial User balances state
+const initialUserBalancesState = {
+    loading: false,
+    data: [],
+    error: null,
+}
+
+// User balances reducer
+const userBalancesReducer = (state = initialUserBalancesState, { type, payload }) => {
+    switch (type) {
+        case types.GET_BALANCE_PENDING:
+            return {
+                ...state,
+                loading: true,
+            };
+        case types.GET_BALANCE_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: null,
+                data: payload.data,
+            };
+        case types.GET_BALANCE_ERROR:
+            return {
+                ...state,
+                loading: false,
+                error: payload.error,
+            };
+        default:
+            return state;
+    }
+}
+
 // COMBINED REDUCERS
 const reducers = {
     snackbar: snackbarReducer,
     userWallets: userWalletsReducer,
     userCategories: userCategoriesReducer,
+    userBalances: userBalancesReducer,
 }
 
 export default combineReducers(reducers)
