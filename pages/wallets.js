@@ -43,7 +43,7 @@ const Wallets = () => {
     }
 
     return (
-        <Container maxWidth="sm">
+        <Container>
             <AddWalletDialog openDialog={openAddDialog} setOpenDialog={setOpenAddDialog} />
             <EditWalletDialog openEditDialogData={openEditDialogData} setOpenEditDialogData={setOpenEditDialogData} />
             <DeleteWalletDialog openDeleteDialogData={openDeleteDialogData} setOpenDeleteDialogData={setOpenDeleteDialogData} />

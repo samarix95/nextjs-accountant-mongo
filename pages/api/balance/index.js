@@ -33,10 +33,57 @@ handler.get(async (req, res) => {
             },
             {
                 $lookup: {
+                    from: "balances_history",
+                    let: {
+                        categoryId: "$categoryId",
+                        year: "$year",
+                        month: "$month",
+                    },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $and: [
+                                        { $eq: [{ $toObjectId: "$categoryId" }, { $toObjectId: "$$categoryId" }] },
+                                        { $eq: ["$year", "$$year"] },
+                                        { $eq: ["$month", "$$month"] },
+                                        { $eq: ["$isDeleted", false] },
+                                        { $eq: ["$deleteDate", null] },
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                comment: 1,
+                                value: 1,
+                                date: 1,
+                            }
+                        }
+                    ],
+                    as: "balanceHistory",
+                }
+            },
+            {
+                $lookup: {
                     from: "categories",
                     localField: "categoryId",
                     foreignField: "_id",
                     as: "categoryData",
+                }
+            },
+            {
+                $unwind: "$categoryData"
+            },
+            {
+                $project: {
+                    deleteDate: 0,
+                    isDeleted: 0,
+                    userId: 0,
+                    "categoryData.deleteDate": 0,
+                    "categoryData.isDeleted": 0,
+                    "categoryData._id": 0,
+                    "categoryData.userId": 0,
                 }
             },
         ]).toArray();
@@ -125,6 +172,7 @@ handler.post(async (req, res) => {
             categoryId: categoryId,
             value: balanceValue,
             comment: comment === null ? '' : comment,
+            date: date,
             month: month,
             year: year,
             isDeleted: false,

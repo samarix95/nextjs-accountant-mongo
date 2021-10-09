@@ -43,7 +43,7 @@ const Categories = () => {
     }
 
     return (
-        <Container maxWidth="sm">
+        <Container>
             <AddCategoryDialog openAddDialogData={openAddDialogData} setOpenAddDialogData={setOpenAddDialogData} />
             <EditCategoryDialog openEditDialogData={openEditDialogData} setOpenEditDialogData={setOpenEditDialogData} />
             <DeleteCategoryDialog openDeleteDialogData={openDeleteDialogData} setOpenDeleteDialogData={setOpenDeleteDialogData} />
