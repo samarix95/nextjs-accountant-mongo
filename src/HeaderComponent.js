@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
 
 import SnackbarComponent from './global/Snackbar';
+import EditBudgetDialog from './balance/EditBudgetDialog';
 import { getUserWallets, getUserCategories, getUserBalances } from '../actions';
 import Link from './Link';
 import AddWalletDialog from './wallet/AddWalletDialog';
@@ -57,7 +58,7 @@ const HeaderComponent = (props) => {
     const { window } = props;
     const [session, loading] = useSession();
     const state = useSelector((state) => state);
-    const { userWallets } = state;
+    const { userWallets, editBudgetDialog } = state;
     const router = useRouter();
     const dispatch = useDispatch();
 
@@ -207,6 +208,7 @@ const HeaderComponent = (props) => {
     return (
         <React.Fragment>
             <SnackbarComponent />
+            {editBudgetDialog.openDialog && <EditBudgetDialog />}
             <AddWalletDialog openDialog={openDialog} setOpenDialog={setOpenDialog} />
             <Popper transition
                 open={openPooper}

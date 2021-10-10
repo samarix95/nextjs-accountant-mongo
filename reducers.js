@@ -29,6 +29,27 @@ const snackbarReducer = (state = initialSnackbatState, { type, payload }) => {
     }
 }
 
+// Initial Edit Budget Dialog state
+const editBudgetDialogState = {
+    openDialog: false,
+    balanceId: null,
+}
+
+// Edit Budget Dialog reducer
+const editBudgetDialogReducer = (state = editBudgetDialogState, { type, payload }) => {
+    switch (type) {
+        case types.OPEN_EDIT_BUDGET:
+            return {
+                openDialog: payload.openDialog,
+                balanceId: payload.balanceId
+            }
+        case types.CLOSE_EDIT_BUDGET:
+            return editBudgetDialogState
+        default:
+            return state
+    }
+}
+
 // Initial User wallets state
 const initialUserWalletsState = {
     loading: false,
@@ -131,6 +152,7 @@ const userBalancesReducer = (state = initialUserBalancesState, { type, payload }
 // COMBINED REDUCERS
 const reducers = {
     snackbar: snackbarReducer,
+    editBudgetDialog: editBudgetDialogReducer,
     userWallets: userWalletsReducer,
     userCategories: userCategoriesReducer,
     userBalances: userBalancesReducer,

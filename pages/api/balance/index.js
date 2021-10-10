@@ -56,7 +56,12 @@ handler.get(async (req, res) => {
                         {
                             $project: {
                                 comment: 1,
-                                value: 1,
+                                value: {
+                                    $convert: {
+                                        input: "$value",
+                                        to: "double"
+                                    }
+                                },
                                 date: 1,
                             }
                         }
@@ -82,7 +87,6 @@ handler.get(async (req, res) => {
                     userId: 0,
                     "categoryData.deleteDate": 0,
                     "categoryData.isDeleted": 0,
-                    "categoryData._id": 0,
                     "categoryData.userId": 0,
                 }
             },
@@ -170,7 +174,7 @@ handler.post(async (req, res) => {
         await req.db.collection('balances_history').insertOne({
             userId: userId,
             categoryId: categoryId,
-            value: balanceValue,
+            value: parseFloat(balanceValue).toFixed(2),
             comment: comment === null ? '' : comment,
             date: date,
             month: month,
@@ -185,14 +189,14 @@ handler.post(async (req, res) => {
                 _id: ObjectId(existBalance._id)
             }, {
                 $set: {
-                    balance: newBalance,
+                    balance: parseFloat(newBalance).toFixed(2),
                 }
             });
         } else {
             await req.db.collection('balances').insertOne({
                 userId: userId,
                 categoryId: categoryId,
-                balance: newBalance,
+                balance: parseFloat(newBalance).toFixed(2),
                 month: month,
                 year: year,
                 isDeleted: false,
@@ -201,6 +205,124 @@ handler.post(async (req, res) => {
         }
 
         return res.status(200).json({ message: `Category was added successful` });
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ message: new Error(error).message });
+    }
+});
+
+handler.put(async (req, res) => {
+    const session = await getSession({ req });
+
+    if (!session) {
+        return res.status(401).json({ message: "You're not autorized" });
+    }
+
+    const { id, categoryId, value } = req.body;
+    const userId = session.user.id;
+
+    if (value == 0 || value === "") {
+        return res.status(400).json({ message: "Value is required" });
+    }
+
+    if (categoryId === null || categoryId === "") {
+        return res.status(400).json({ message: "Category id is required" });
+    }
+
+    if (id === null || id === "") {
+        return res.status(400).json({ message: "Balance id is required" });
+    }
+
+    try {
+        // Check if balance exists
+        const existBalance = await req.db.collection('balances').findOne({
+            userId: userId,
+            _id: ObjectId(id),
+            isDeleted: false,
+        });
+
+        if (existBalance === null) {
+            return res.status(400).json({ message: `Balance not found (ID '${categoryId}')` });
+        }
+
+        // Check if get category with the same spending type
+        const needCategory = await req.db.collection('categories').findOne({
+            _id: ObjectId(categoryId),
+            userId: userId,
+            isDeleted: false,
+        });
+
+        if (needCategory === null) {
+            return res.status(400).json({ message: `Category not found (ID '${categoryId}')` });
+        }
+
+        // Get exist category
+        const haveCategory = await req.db.collection('categories').findOne({
+            _id: ObjectId(existBalance.categoryId),
+            userId: userId,
+            isDeleted: false,
+        });
+
+        if (haveCategory.isSpending !== needCategory.isSpending) {
+            return res.status(400).json({ message: `Can't change to categoty with different spending type ${needCategory.name}` });
+        }
+
+        // Check if you already have balance with new category
+        const existBalanceWithNewCategory = await req.db.collection('balances').findOne({
+            _id: { $ne: ObjectId(id) },
+            userId: userId,
+            categoryId: categoryId,
+            year: existBalance.year,
+            month: existBalance.month,
+        });
+
+        if (existBalanceWithNewCategory !== null) {
+            return res.status(400).json({ message: `Can't set new category. You already have balance with category '${needCategory.name}'` });
+        }
+
+        // Calculate balance difference
+        const balanceDiff = parseFloat(parseFloat(value) - parseFloat(existBalance.balance)).toFixed(2);
+
+        // Update exist balance
+        await req.db.collection('balances').updateOne({
+            _id: ObjectId(id),
+            userId: userId,
+        }, {
+            $set: {
+                balance: parseFloat(value),
+                categoryId: categoryId,
+            }
+        });
+
+        // Update exists history
+        if (haveCategory.categoryId !== needCategory.categoryId) {
+            await req.db.collection('balances_history').update({
+                userId: userId,
+                categoryId: existBalance.categoryId,
+                year: existBalance.year,
+                month: existBalance.month,
+            }, {
+                $set: {
+                    categoryId: categoryId,
+                }
+            });
+        }
+
+        // Add change to history
+        await req.db.collection('balances_history').insertOne({
+            userId: userId,
+            categoryId: categoryId,
+            value: balanceDiff,
+            comment: "Manual change",
+            date: new Date(),
+            month: existBalance.month,
+            year: existBalance.year,
+            isDeleted: false,
+            deleteDate: null,
+        });
+
+        return res.status(200).json({ message: `Balance was update successful` });
+
     } catch (error) {
         console.log(error)
         return res.status(500).json({ message: new Error(error).message });

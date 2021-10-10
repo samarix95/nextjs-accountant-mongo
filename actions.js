@@ -13,6 +13,20 @@ export const closeSnackbar = () => (dispatch) => dispatch({
     type: types.CLOSE_SNACKBAR,
 })
 
+// Open Edit Budget Dialog
+export const openEditBudgetDialog = (open, balanceId) => (dispatch) => dispatch({
+    type: types.OPEN_EDIT_BUDGET,
+    payload: {
+        openDialog: open,
+        balanceId: balanceId,
+    },
+})
+
+// Close Edit Budget Dialog
+export const closeEditBudgetDialog = () => (dispatch) => dispatch({
+    type: types.CLOSE_EDIT_BUDGET,
+})
+
 // Get user wallets
 export const getUserWallets = () => {
     return dispatch => {
