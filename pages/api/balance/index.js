@@ -82,12 +82,17 @@ handler.get(async (req, res) => {
             },
             {
                 $project: {
-                    deleteDate: 0,
-                    isDeleted: 0,
-                    userId: 0,
-                    "categoryData.deleteDate": 0,
-                    "categoryData.isDeleted": 0,
-                    "categoryData.userId": 0,
+                    balance: {
+                        $convert: {
+                            input: "$balance",
+                            to: "double"
+                        }
+                    },
+                    balanceHistory: 1,
+                    "categoryData.name": 1,
+                    "categoryData.description": 1,
+                    "categoryData.isSpending": 1,
+                    "categoryData._id": 1,
                 }
             },
         ]).toArray();
@@ -295,8 +300,8 @@ handler.put(async (req, res) => {
         });
 
         // Update exists history
-        if (haveCategory.categoryId !== needCategory.categoryId) {
-            await req.db.collection('balances_history').update({
+        if (existBalance.categoryId !== categoryId) {
+            await req.db.collection('balances_history').updateMany({
                 userId: userId,
                 categoryId: existBalance.categoryId,
                 year: existBalance.year,
@@ -313,7 +318,7 @@ handler.put(async (req, res) => {
             userId: userId,
             categoryId: categoryId,
             value: balanceDiff,
-            comment: "Manual change",
+            comment: existBalance.categoryId !== categoryId ? `Manual change. Category was changed from '${haveCategory.name}' to '${needCategory.name}'` : "Manual change",
             date: new Date(),
             month: existBalance.month,
             year: existBalance.year,

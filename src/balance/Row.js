@@ -13,6 +13,7 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import Stack from '@mui/material/Stack';
 
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
@@ -51,9 +52,11 @@ const Row = (props) => {
                 <TableCell>{row.categoryData.name}</TableCell>
                 <TableCell>{row.balance}</TableCell>
                 <TableCell>{row.categoryData.description}</TableCell>
-                <TableCell align="right">
-                    <IconButton size="small" onClick={(event) => handleEditBalance(event, row._id)}><EditIcon /></IconButton>
-                    <IconButton size="small" onClick={(event) => handleDeleteBalance(event, row._id)}><DeleteIcon /></IconButton>
+                <TableCell>
+                    <Stack direction="row">
+                        <IconButton sx={{ marginLeft: "auto" }} size="small" onClick={(event) => handleEditBalance(event, row._id)}><EditIcon /></IconButton>
+                        <IconButton size="small" onClick={(event) => handleDeleteBalance(event, row._id)}><DeleteIcon /></IconButton>
+                    </Stack>
                 </TableCell>
             </TableRow>
             <TableRow>
@@ -80,9 +83,11 @@ const Row = (props) => {
                                                 <TableCell>{new Date(historyRow.date).toLocaleString('en-US', { year: 'numeric', month: 'numeric', day: 'numeric' })}</TableCell>
                                                 <TableCell>{historyRow.value}</TableCell>
                                                 <TableCell>{historyRow.comment}</TableCell>
-                                                <TableCell align="right">
-                                                    <IconButton size="small" onClick={(event) => handleEditBalanceHisrory(event, historyRow._id)}><EditIcon /></IconButton>
-                                                    <IconButton size="small" onClick={(event) => handleDeleteBalanceHisrory(event, historyRow._id)}><DeleteIcon /></IconButton>
+                                                <TableCell>
+                                                    <Stack direction="row">
+                                                        <IconButton sx={{ marginLeft: "auto" }} size="small" onClick={(event) => handleEditBalanceHisrory(event, historyRow._id)}><EditIcon /></IconButton>
+                                                        <IconButton size="small" onClick={(event) => handleDeleteBalanceHisrory(event, historyRow._id)}><DeleteIcon /></IconButton>
+                                                    </Stack>
                                                 </TableCell>
                                             </TableRow>
                                         ))}
