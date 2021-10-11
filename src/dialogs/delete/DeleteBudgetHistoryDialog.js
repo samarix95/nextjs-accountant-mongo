@@ -2,7 +2,7 @@ import * as React from 'react';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { openSnackbar, getUserBalances, closeEditBudgetHistoryDialog } from '../../../actions';
+import { openSnackbar, getUserBalances, closeDeleteBudgetHistoryDialog } from '../../../actions';
 
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -29,7 +29,7 @@ const DeleteBudgetHistoryDialog = () => {
 
     const handleCloseDialog = () => {
         if (!disableDialogButtons) {
-            dispatch(closeEditBudgetHistoryDialog());
+            dispatch(closeDeleteBudgetHistoryDialog());
         }
     };
 
@@ -43,7 +43,7 @@ const DeleteBudgetHistoryDialog = () => {
             .then(response => {
                 setDisableDialogButtons(false);
                 dispatch(openSnackbar(true, response.data.message, "success"));
-                dispatch(closeEditBudgetHistoryDialog());
+                dispatch(closeDeleteBudgetHistoryDialog());
                 dispatch(getUserBalances());
             })
             .catch(error => {

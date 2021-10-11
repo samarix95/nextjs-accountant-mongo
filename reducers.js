@@ -54,18 +54,41 @@ const editBudgetDialogReducer = (state = editBudgetDialogState, { type, payload 
 const editBudgetHistoryDialogState = {
     openDialog: false,
     balanceId: null,
+    historyId: null,
 }
 
 // Edit Budget History Dialog reducer
-const deleteBudgetHistoryDialogReducer = (state = editBudgetHistoryDialogState, { type, payload }) => {
+const editBudgetHistoryDialogReducer = (state = editBudgetHistoryDialogState, { type, payload }) => {
     switch (type) {
         case types.OPEN_EDIT_BUDGET_HISTORY:
             return {
                 openDialog: payload.openDialog,
                 balanceId: payload.balanceId,
+                historyId: payload.historyId,
             }
         case types.CLOSE_EDIT_BUDGET_HISTORY:
             return editBudgetHistoryDialogState
+        default:
+            return state
+    }
+}
+
+// Initial Edit Budget History Dialog state
+const deleteBudgetHistoryDialogState = {
+    openDialog: false,
+    balanceId: null,
+}
+
+// Edit Budget History Dialog reducer
+const deleteBudgetHistoryDialogReducer = (state = deleteBudgetHistoryDialogState, { type, payload }) => {
+    switch (type) {
+        case types.OPEN_DELETE_BUDGET_HISTORY:
+            return {
+                openDialog: payload.openDialog,
+                balanceId: payload.balanceId,
+            }
+        case types.CLOSE_DELETE_BUDGET_HISTORY:
+            return deleteBudgetHistoryDialogState
         default:
             return state
     }
@@ -196,6 +219,7 @@ const reducers = {
     snackbar: snackbarReducer,
     editBudgetDialog: editBudgetDialogReducer,
     deleteBudgetDialog: deleteBudgetDialogReducer,
+    editBudgetHistoryDialog: editBudgetHistoryDialogReducer,
     deleteBudgetHistoryDialog: deleteBudgetHistoryDialogReducer,
     userWallets: userWalletsReducer,
     userCategories: userCategoriesReducer,

@@ -7,6 +7,7 @@ import { useRouter } from 'next/router';
 import SnackbarComponent from './global/Snackbar';
 import EditBudgetDialog from './dialogs/edit/EditBudgetDialog';
 import DeleteBudgetDialog from './dialogs/delete/DeleteBudgetDialog';
+import EditBudgetHistoryDialog from './dialogs/edit/EditBudgetHistoryDialog';
 import DeleteBudgetHistoryDialog from './dialogs/delete/DeleteBudgetHistoryDialog';
 import AddWalletDialog from './dialogs/add/AddWalletDialog';
 import { getUserWallets, getUserCategories, getUserBalances } from '../actions';
@@ -60,7 +61,7 @@ const HeaderComponent = (props) => {
     const { window } = props;
     const [session, loading] = useSession();
     const state = useSelector((state) => state);
-    const { userWallets, editBudgetDialog, deleteBudgetDialog, deleteBudgetHistoryDialog } = state;
+    const { userWallets, editBudgetDialog, deleteBudgetDialog, editBudgetHistoryDialog, deleteBudgetHistoryDialog } = state;
     const router = useRouter();
     const dispatch = useDispatch();
 
@@ -212,6 +213,7 @@ const HeaderComponent = (props) => {
             <SnackbarComponent />
             {editBudgetDialog.openDialog && <EditBudgetDialog />}
             {deleteBudgetDialog.openDialog && <DeleteBudgetDialog />}
+            {editBudgetHistoryDialog.openDialog && <EditBudgetHistoryDialog />}
             {deleteBudgetHistoryDialog.openDialog && <DeleteBudgetHistoryDialog />}
             <AddWalletDialog openDialog={openDialog} setOpenDialog={setOpenDialog} />
             <Popper transition

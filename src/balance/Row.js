@@ -2,7 +2,7 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 
-import { openEditBudgetDialog, openDeleteBudgetDialog, openDeleteBudgeHistorytDialog } from '../../actions';
+import { openEditBudgetDialog, openDeleteBudgetDialog, openEditBudgeHistorytDialog, openDeleteBudgeHistorytDialog } from '../../actions';
 
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -33,8 +33,8 @@ const Row = (props) => {
         dispatch(openDeleteBudgetDialog(true, id));
     }
 
-    const handleEditBalanceHisrory = (event, id) => {
-        console.log(id);
+    const handleEditBalanceHisrory = (event, balanceId, historyId) => {
+        dispatch(openEditBudgeHistorytDialog(true, balanceId, historyId));
     }
 
     const handleDeleteBalanceHisrory = (event, id) => {
@@ -85,7 +85,7 @@ const Row = (props) => {
                                                 <TableCell>{historyRow.comment}</TableCell>
                                                 <TableCell>
                                                     <Stack direction="row">
-                                                        <IconButton sx={{ marginLeft: "auto" }} size="small" onClick={(event) => handleEditBalanceHisrory(event, historyRow._id)}><EditIcon /></IconButton>
+                                                        <IconButton sx={{ marginLeft: "auto" }} size="small" onClick={(event) => handleEditBalanceHisrory(event, row._id, historyRow._id)}><EditIcon /></IconButton>
                                                         <IconButton size="small" onClick={(event) => handleDeleteBalanceHisrory(event, historyRow._id)}><DeleteIcon /></IconButton>
                                                     </Stack>
                                                 </TableCell>
