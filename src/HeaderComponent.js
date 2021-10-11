@@ -64,7 +64,16 @@ const HeaderComponent = (props) => {
     const { window } = props;
     const [session, loading] = useSession();
     const state = useSelector((state) => state);
-    const { userWallets, editBudgetDialog, deleteBudgetDialog, editBudgetHistoryDialog, deleteBudgetHistoryDialog, addCategoryDialog, editCategoryDialog, deleteCategoryDialog } = state;
+    const {
+        userWallets,
+        editBudgetDialog,
+        deleteBudgetDialog,
+        editBudgetHistoryDialog,
+        deleteBudgetHistoryDialog,
+        addCategoryDialog,
+        editCategoryDialog,
+        deleteCategoryDialog
+    } = state;
     const router = useRouter();
     const dispatch = useDispatch();
 

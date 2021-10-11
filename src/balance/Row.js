@@ -43,7 +43,7 @@ const Row = (props) => {
 
     return (
         <React.Fragment>
-            <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
+            <TableRow sx={{ '& > *': { borderBottom: 'unset' } }} hover onClick={() => setOpen(!open)}>
                 <TableCell>
                     <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
                         {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
@@ -68,7 +68,7 @@ const Row = (props) => {
                             </Typography>
                             <Table size="small" aria-label="purchases">
                                 <TableHead>
-                                    <TableRow>
+                                    <TableRow >
                                         <TableCell>Date</TableCell>
                                         <TableCell>Value</TableCell>
                                         <TableCell>Comment</TableCell>
@@ -79,7 +79,7 @@ const Row = (props) => {
                                     {row.balanceHistory
                                         .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
                                         .map((historyRow, key) => (
-                                            <TableRow key={key}>
+                                            <TableRow key={key} hover>
                                                 <TableCell>{new Date(historyRow.date).toLocaleString('en-US', { year: 'numeric', month: 'numeric', day: 'numeric' })}</TableCell>
                                                 <TableCell>{historyRow.value}</TableCell>
                                                 <TableCell>{historyRow.comment}</TableCell>
