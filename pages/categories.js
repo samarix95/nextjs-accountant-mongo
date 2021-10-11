@@ -1,11 +1,10 @@
 import * as React from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
-import AddCategoryDialog from '../src/dialogs/add/AddCategoryDialog';
-import EditCategoryDialog from '../src/dialogs/edit/EditCategoryDialog';
-import DeleteCategoryDialog from '../src/dialogs/delete/DeleteCategoryDialog';
 import ProTip from '../src/ProTip';
 import Copyright from '../src/Copyright';
+
+import { openAddCategoryDialog, openEditCategoryDialog, openDeleteCategoryDialog } from '../actions';
 
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
@@ -23,30 +22,23 @@ import AddBoxIcon from '@mui/icons-material/AddBox';
 
 const Categories = () => {
     const state = useSelector((state) => state);
-
+    const dispatch = useDispatch();
     const { userCategories } = state;
 
-    const [openAddDialogData, setOpenAddDialogData] = React.useState({ openDialog: false, categoryName: '', isSpending: false });
-    const [openEditDialogData, setOpenEditDialogData] = React.useState({ openDialog: false, categoryId: '', categoryName: '', categoryDescription: '', isSpending: false });
-    const [openDeleteDialogData, setOpenDeleteDialogData] = React.useState({ openDialog: false, categoryId: '', categoryName: '' });
-
     const handleAddCategory = () => {
-        setOpenAddDialogData({ ...openAddDialogData, openDialog: true, isSpending: false });
+        dispatch(openAddCategoryDialog(false, '', ''));
     }
 
     const handleEditCategory = (id, name, description, spending) => {
-        setOpenEditDialogData({ openDialog: true, categoryId: id, categoryName: name, categoryDescription: description, isSpending: spending });
+        dispatch(openEditCategoryDialog(id, spending, name, description));
     }
 
     const handleDeleteCategory = (id, name) => {
-        setOpenDeleteDialogData({ openDialog: true, categoryId: id, categoryName: name });
+        dispatch(openDeleteCategoryDialog(id, name));
     }
 
     return (
         <Container>
-            <AddCategoryDialog openAddDialogData={openAddDialogData} setOpenAddDialogData={setOpenAddDialogData} />
-            <EditCategoryDialog openEditDialogData={openEditDialogData} setOpenEditDialogData={setOpenEditDialogData} />
-            <DeleteCategoryDialog openDeleteDialogData={openDeleteDialogData} setOpenDeleteDialogData={setOpenDeleteDialogData} />
             <Box sx={{ my: 4 }}>
                 {userCategories.loading
                     ? <Stack sx={{ display: 'flex', height: 200, alignItems: 'center', justifyContent: 'center', }}>

@@ -1,9 +1,8 @@
 import * as React from 'react';
-import PropTypes from 'prop-types';
 import axios from 'axios';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { openSnackbar, getUserCategories } from '../../../actions';
+import { openSnackbar, getUserCategories, closeAddCategoryDialog } from '../../../actions';
 
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -23,32 +22,37 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="down" ref={ref} {...props} />;
 });
 
-const AddCategoryDialog = (props) => {
-    const { openAddDialogData, setOpenAddDialogData } = props;
+const AddCategoryDialog = () => {
+    const state = useSelector((state) => state);
     const dispatch = useDispatch();
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+    const { addCategoryDialog } = state;
 
-    const [newCategoryDescription, setNewCategoryDescription] = React.useState('');
+    const [isSpending, setIsSpending] = React.useState(addCategoryDialog.isSpending);
+    const [newCategoryName, setNewCategoryName] = React.useState(addCategoryDialog.categoryName);
+    const [newCategoryDescription, setNewCategoryDescription] = React.useState(addCategoryDialog.categoryDescription);
     const [disableDialogButtons, setDisableDialogButtons] = React.useState(false);
 
     const resetCategoryDialogData = () => {
-        setNewCategoryDescription('');
+        setIsSpending(addCategoryDialog.isSpending);
+        setNewCategoryName(addCategoryDialog.categoryName);
+        setNewCategoryDescription(addCategoryDialog.categoryDescription);
     }
 
     const handleCloseDialog = () => {
         if (!disableDialogButtons) {
-            setOpenAddDialogData({ ...openAddDialogData, openDialog: false });
             resetCategoryDialogData();
+            dispatch(closeAddCategoryDialog());
         }
     };
 
     const handleChangeIsSpend = (event) => {
-        setOpenAddDialogData({ ...openAddDialogData, isSpending: event.target.checked });
+        setIsSpending(event.target.checked);
     }
 
     const handleChangeNewCategoryName = (event) => {
-        setOpenAddDialogData({ ...openAddDialogData, categoryName: event.target.value });
+        setNewCategoryName(event.target.value);
     }
 
     const handleChangeNewCategoryDescription = (event) => {
@@ -60,12 +64,12 @@ const AddCategoryDialog = (props) => {
         axios.request({
             method: "post",
             url: "/api/category",
-            data: { categoryName: openAddDialogData.categoryName, categoryDescription: newCategoryDescription, isSpending: openAddDialogData.isSpending },
+            data: { categoryName: newCategoryName, categoryDescription: newCategoryDescription, isSpending: isSpending },
         })
             .then(response => {
                 setDisableDialogButtons(false);
-                setOpenAddDialogData({ ...openAddDialogData, openDialog: false });
                 resetCategoryDialogData();
+                dispatch(closeAddCategoryDialog());
                 dispatch(openSnackbar(true, response.data.message, "success"));
                 dispatch(getUserCategories());
             })
@@ -78,7 +82,7 @@ const AddCategoryDialog = (props) => {
     return (
         <Dialog
             fullScreen={fullScreen}
-            open={openAddDialogData.openDialog}
+            open={addCategoryDialog.openDialog}
             TransitionComponent={Transition}
             keepMounted
             onClose={handleCloseDialog}
@@ -88,11 +92,20 @@ const AddCategoryDialog = (props) => {
             <DialogContent>
                 <Stack spacing={1}>
                     <FormGroup>
-                        <FormControlLabel control={<Checkbox color="default" checked={openAddDialogData.isSpending} onChange={handleChangeIsSpend} />} label="Is spending" />
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    color="default"
+                                    checked={isSpending}
+                                    onChange={handleChangeIsSpend}
+                                />
+                            }
+                            label="Is spending"
+                        />
                     </FormGroup>
                     <TextField
                         disabled={disableDialogButtons}
-                        value={openAddDialogData.categoryName || ''}
+                        value={newCategoryName}
                         required
                         id="Category-name-field"
                         label="Category name"
@@ -120,10 +133,5 @@ const AddCategoryDialog = (props) => {
         </Dialog>
     );
 }
-
-AddCategoryDialog.propTypes = {
-    openAddDialogData: PropTypes.object.isRequired,
-    setOpenAddDialogData: PropTypes.func.isRequired,
-};
 
 export default AddCategoryDialog;

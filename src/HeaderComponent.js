@@ -9,6 +9,9 @@ import EditBudgetDialog from './dialogs/edit/EditBudgetDialog';
 import DeleteBudgetDialog from './dialogs/delete/DeleteBudgetDialog';
 import EditBudgetHistoryDialog from './dialogs/edit/EditBudgetHistoryDialog';
 import DeleteBudgetHistoryDialog from './dialogs/delete/DeleteBudgetHistoryDialog';
+import AddCategoryDialog from './dialogs/add/AddCategoryDialog';
+import EditCategoryDialog from './dialogs/edit/EditCategoryDialog';
+import DeleteCategoryDialog from './dialogs/delete/DeleteCategoryDialog';
 import AddWalletDialog from './dialogs/add/AddWalletDialog';
 import { getUserWallets, getUserCategories, getUserBalances } from '../actions';
 import Link from './Link';
@@ -61,7 +64,7 @@ const HeaderComponent = (props) => {
     const { window } = props;
     const [session, loading] = useSession();
     const state = useSelector((state) => state);
-    const { userWallets, editBudgetDialog, deleteBudgetDialog, editBudgetHistoryDialog, deleteBudgetHistoryDialog } = state;
+    const { userWallets, editBudgetDialog, deleteBudgetDialog, editBudgetHistoryDialog, deleteBudgetHistoryDialog, addCategoryDialog, editCategoryDialog, deleteCategoryDialog } = state;
     const router = useRouter();
     const dispatch = useDispatch();
 
@@ -215,6 +218,9 @@ const HeaderComponent = (props) => {
             {deleteBudgetDialog.openDialog && <DeleteBudgetDialog />}
             {editBudgetHistoryDialog.openDialog && <EditBudgetHistoryDialog />}
             {deleteBudgetHistoryDialog.openDialog && <DeleteBudgetHistoryDialog />}
+            {addCategoryDialog.openDialog && <AddCategoryDialog />}
+            {editCategoryDialog.openDialog && <EditCategoryDialog />}
+            {deleteCategoryDialog.openDialog && <DeleteCategoryDialog />}
             <AddWalletDialog openDialog={openDialog} setOpenDialog={setOpenDialog} />
             <Popper transition
                 open={openPooper}

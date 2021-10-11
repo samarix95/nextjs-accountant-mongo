@@ -29,6 +29,81 @@ const snackbarReducer = (state = initialSnackbatState, { type, payload }) => {
     }
 }
 
+// Initial Add Category Dialog state
+const initialAddCategoryDialogState = {
+    openDialog: false,
+    isSpending: false,
+    categoryName: '',
+    categoryDescription: '',
+}
+
+// Add Category Dialog reducer
+const addCategoryDialogReducer = (state = initialAddCategoryDialogState, { type, payload }) => {
+    switch (type) {
+        case types.OPEN_ADD_CATEGORY_DIALOG:
+            return {
+                openDialog: true,
+                isSpending: payload.isSpending,
+                categoryName: payload.categoryName,
+                categoryDescription: payload.categoryDescription,
+            }
+        case types.CLOSE_ADD_CATEGORY_DIALOG:
+            return initialAddCategoryDialogState
+        default:
+            return state
+    }
+}
+
+// Initial Edit Category Dialog state
+const initialEditCategoryDialogState = {
+    openDialog: false,
+    id: null,
+    isSpending: false,
+    categoryName: '',
+    categoryDescription: '',
+}
+
+// Edit Category Dialog reducer
+const editCategoryDialogReducer = (state = initialEditCategoryDialogState, { type, payload }) => {
+    switch (type) {
+        case types.OPEN_EDIT_CATEGORY_DIALOG:
+            return {
+                openDialog: true,
+                id: payload.id,
+                isSpending: payload.isSpending,
+                categoryName: payload.categoryName,
+                categoryDescription: payload.categoryDescription,
+            }
+        case types.CLOSE_EDIT_CATEGORY_DIALOG:
+            return initialEditCategoryDialogState
+        default:
+            return state
+    }
+}
+
+// Initial Delete Category Dialog state
+const initialDeleteCategoryDialogState = {
+    openDialog: false,
+    id: null,
+    name: "",
+}
+
+// Delete Category Dialog reducer
+const deleteCategoryDialogReducer = (state = initialDeleteCategoryDialogState, { type, payload }) => {
+    switch (type) {
+        case types.OPEN_DELETE_CATEGORY_DIALOG:
+            return {
+                openDialog: true,
+                id: payload.id,
+                name: payload.name,
+            }
+        case types.CLOSE_DELETE_CATEGORY_DIALOG:
+            return initialDeleteCategoryDialogState
+        default:
+            return state
+    }
+}
+
 // Initial Edit Budget Dialog state
 const editBudgetDialogState = {
     openDialog: false,
@@ -217,6 +292,9 @@ const userBalancesReducer = (state = initialUserBalancesState, { type, payload }
 // COMBINED REDUCERS
 const reducers = {
     snackbar: snackbarReducer,
+    addCategoryDialog: addCategoryDialogReducer,
+    editCategoryDialog: editCategoryDialogReducer,
+    deleteCategoryDialog: deleteCategoryDialogReducer,
     editBudgetDialog: editBudgetDialogReducer,
     deleteBudgetDialog: deleteBudgetDialogReducer,
     editBudgetHistoryDialog: editBudgetHistoryDialogReducer,

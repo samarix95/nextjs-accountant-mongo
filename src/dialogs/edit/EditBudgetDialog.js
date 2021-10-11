@@ -2,8 +2,7 @@ import * as React from 'react';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { openSnackbar, getUserBalances, closeEditBudgetDialog } from '../../../actions';
-import AddCategoryDialog from '../add/AddCategoryDialog';
+import { openSnackbar, getUserBalances, closeEditBudgetDialog, openAddCategoryDialog } from '../../../actions';
 
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -37,7 +36,6 @@ const EditBudgetDialog = () => {
     const [disableDialogButtons, setDisableDialogButtons] = React.useState(false);
     const [selectedCategory, setSelectedCategory] = React.useState(currentCategoryData);
     const [value, setValue] = React.useState(balanceData.balance);
-    const [openAddCategoryDialogData, setOpenAddCategoryDialogData] = React.useState({ openDialog: false, categoryName: '', isSpending: false });
 
     const resetBudgetDialogData = () => {
         setSelectedCategory(null);
@@ -108,7 +106,7 @@ const EditBudgetDialog = () => {
                                     setSelectedCategory({ name: newValue });
                                 } else if (newValue && newValue.inputValue) {
                                     // Create a new value from the user input
-                                    setOpenAddCategoryDialogData({ openDialog: true, categoryName: newValue.inputValue, isSpending: openEditBudgetDialogData.isSpending });
+                                    dispatch(openAddCategoryDialog(Boolean(openEditBudgetDialogData.isSpending), newValue.inputValue, ""));
                                 } else {
                                     setSelectedCategory(newValue);
                                 }
@@ -171,7 +169,6 @@ const EditBudgetDialog = () => {
                     <Button disabled={disableDialogButtons} size="small" variant="contained" onClick={handleEditBudget}>Update</Button>
                 </DialogActions>
             </Dialog >
-            <AddCategoryDialog openAddDialogData={openAddCategoryDialogData} setOpenAddDialogData={setOpenAddCategoryDialogData} />
         </React.Fragment >
     );
 }

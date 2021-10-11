@@ -179,7 +179,7 @@ handler.post(async (req, res) => {
         await req.db.collection('balances_history').insertOne({
             userId: userId,
             categoryId: categoryId,
-            value: parseFloat(balanceValue).toFixed(2),
+            value: Number(parseFloat(balanceValue).toFixed(2)),
             comment: comment === null ? '' : comment,
             date: date,
             month: month,
@@ -194,14 +194,14 @@ handler.post(async (req, res) => {
                 _id: ObjectId(existBalance._id)
             }, {
                 $set: {
-                    balance: parseFloat(newBalance).toFixed(2),
+                    balance: Number(parseFloat(newBalance).toFixed(2)),
                 }
             });
         } else {
             await req.db.collection('balances').insertOne({
                 userId: userId,
                 categoryId: categoryId,
-                balance: parseFloat(newBalance).toFixed(2),
+                balance: Number(parseFloat(newBalance).toFixed(2)),
                 month: month,
                 year: year,
                 isDeleted: false,
@@ -298,7 +298,7 @@ handler.put(async (req, res) => {
             userId: userId,
         }, {
             $set: {
-                balance: parseFloat(value),
+                balance: Number(parseFloat(value)),
                 categoryId: categoryId,
             }
         });
@@ -321,8 +321,10 @@ handler.put(async (req, res) => {
         await req.db.collection('balances_history').insertOne({
             userId: userId,
             categoryId: categoryId,
-            value: balanceDiff,
-            comment: existBalance.categoryId !== categoryId ? `Manual change. Category was changed from '${haveCategory.name}' to '${needCategory.name}'` : "Manual change",
+            value: Number(balanceDiff),
+            comment: existBalance.categoryId !== categoryId
+                ? `Manual change. Category was changed from '${haveCategory.name}' to '${needCategory.name}'`
+                : "Manual change",
             date: new Date(),
             month: existBalance.month,
             year: existBalance.year,

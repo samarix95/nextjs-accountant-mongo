@@ -4,9 +4,7 @@ import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import enLocale from 'date-fns/locale/en-US';
 
-import { openSnackbar, getUserBalances } from '../../../actions';
-
-import AddCategoryDialog from './AddCategoryDialog';
+import { openSnackbar, getUserBalances, openAddCategoryDialog } from '../../../actions';
 
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -42,7 +40,6 @@ const AddBudgetDialog = (props) => {
 
     const [disableDialogButtons, setDisableDialogButtons] = React.useState(false);
     const [selectedCategory, setSelectedCategory] = React.useState(null);
-    const [openAddCategoryDialogData, setOpenAddCategoryDialogData] = React.useState({ openDialog: false, categoryName: '', isSpending: false });
     const [dateValue, setDateValue] = React.useState(new Date());
     const [value, setValue] = React.useState(0.0);
     const [comment, setComment] = React.useState("");
@@ -156,7 +153,7 @@ const AddBudgetDialog = (props) => {
                                     setSelectedCategory({ name: newValue });
                                 } else if (newValue && newValue.inputValue) {
                                     // Create a new value from the user input
-                                    setOpenAddCategoryDialogData({ openDialog: true, categoryName: newValue.inputValue, isSpending: openAddBudgetDialogData.isSpending });
+                                    dispatch(openAddCategoryDialog(Boolean(openAddBudgetDialogData.isSpending), newValue.inputValue, ""));
                                 } else {
                                     setSelectedCategory(newValue);
                                 }
@@ -212,7 +209,6 @@ const AddBudgetDialog = (props) => {
                     <Button disabled={disableDialogButtons} size="small" variant="contained" onClick={handleAddNewBudget}>Add</Button>
                 </DialogActions>
             </Dialog>
-            <AddCategoryDialog openAddDialogData={openAddCategoryDialogData} setOpenAddDialogData={setOpenAddCategoryDialogData} />
         </React.Fragment>
     );
 }

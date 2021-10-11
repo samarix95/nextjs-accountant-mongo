@@ -13,6 +13,51 @@ export const closeSnackbar = () => (dispatch) => dispatch({
     type: types.CLOSE_SNACKBAR,
 })
 
+// Open Add Category Dialog
+export const openAddCategoryDialog = (isSpending, categoryName, categoryDescription) => (dispatch) => dispatch({
+    type: types.OPEN_ADD_CATEGORY_DIALOG,
+    payload: {
+        isSpending: isSpending,
+        categoryName: categoryName,
+        categoryDescription: categoryDescription,
+    },
+})
+
+// Close Add Category Dialog
+export const closeAddCategoryDialog = () => (dispatch) => dispatch({
+    type: types.CLOSE_ADD_CATEGORY_DIALOG,
+})
+
+// Open Edit Category Dialog
+export const openEditCategoryDialog = (id, isSpending, categoryName, categoryDescription) => (dispatch) => dispatch({
+    type: types.OPEN_EDIT_CATEGORY_DIALOG,
+    payload: {
+        id: id,
+        isSpending: isSpending,
+        categoryName: categoryName,
+        categoryDescription: categoryDescription,
+    },
+})
+
+// Close Delete Category Dialog
+export const closeDeleteCategoryDialog = () => (dispatch) => dispatch({
+    type: types.CLOSE_DELETE_CATEGORY_DIALOG,
+})
+
+// Open Delete Category Dialog
+export const openDeleteCategoryDialog = (id, name) => (dispatch) => dispatch({
+    type: types.OPEN_DELETE_CATEGORY_DIALOG,
+    payload: {
+        id: id,
+        name: name,
+    },
+})
+
+// Close Delete Category Dialog
+export const closeEditCategoryDialog = () => (dispatch) => dispatch({
+    type: types.CLOSE_EDIT_CATEGORY_DIALOG,
+})
+
 // Open Edit Budget Dialog
 export const openEditBudgetDialog = (open, balanceId) => (dispatch) => dispatch({
     type: types.OPEN_EDIT_BUDGET,

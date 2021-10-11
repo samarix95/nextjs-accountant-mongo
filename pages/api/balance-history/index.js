@@ -56,7 +56,7 @@ handler.put(async (req, res) => {
             return res.status(400).json({ message: `Can't set another year` });
         }
 
-        const valueDiff = parseFloat(parseFloat(value) - parseFloat(existHistory.value)).toFixed(2);
+        const valueDiff = parseFloat(value) - parseFloat(existHistory.value);
 
         // Update balance
         await req.db.collection('balances').updateOne({
@@ -64,14 +64,16 @@ handler.put(async (req, res) => {
             categoryId: existHistory.categoryId,
             year: existHistory.year,
             month: existHistory.month,
-        }, { $inc: { balance: parseFloat(valueDiff) }, });
+        }, {
+            $inc: { balance: Number(parseFloat(valueDiff).toFixed(2)), },
+        });
 
         // Upadte balance history
         await req.db.collection('balances_history').updateOne({
             _id: ObjectId(id)
         }, {
             $set: {
-                value: parseFloat(value).toFixed(2),
+                value: Number(parseFloat(value).toFixed(2)),
             }
         });
 
@@ -111,25 +113,13 @@ handler.delete(async (req, res) => {
         const { value, categoryId, month, year } = existBalanceHistory;
 
         // Update exist balance
-        const existBalance = await req.db.collection('balances').findOne({
-            userId: userId,
-            categoryId: categoryId,
-            month: month,
-            year: year,
-
-        });
-
-        const newBalanceValue = parseFloat(existBalance.balance) - parseFloat(value);
-
         await req.db.collection('balances').updateOne({
             userId: userId,
             categoryId: categoryId,
             month: month,
             year: year,
         }, {
-            $set: {
-                balance: newBalanceValue,
-            }
+            $inc: { balance: Number(-1 * parseFloat(value).toFixed(2)), },
         });
 
         // Delete balance history

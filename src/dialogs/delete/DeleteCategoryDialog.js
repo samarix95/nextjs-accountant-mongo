@@ -1,9 +1,8 @@
 import * as React from 'react';
-import PropTypes from 'prop-types';
 import axios from 'axios';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { openSnackbar, getUserCategories } from '../../../actions';
+import { openSnackbar, getUserCategories, closeDeleteCategoryDialog } from '../../../actions';
 
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -15,15 +14,16 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="down" ref={ref} {...props} />;
 });
 
-const DeleteCategoryDialog = (props) => {
-    const { openDeleteDialogData, setOpenDeleteDialogData } = props;
+const DeleteCategoryDialog = () => {
+    const state = useSelector((state) => state);
     const dispatch = useDispatch();
+    const { deleteCategoryDialog } = state;
 
     const [disableDialogButtons, setDisableDialogButtons] = React.useState(false);
 
     const handleCloseDialog = () => {
         if (!disableDialogButtons) {
-            setOpenDeleteDialogData({ ...openDeleteDialogData, openDialog: false });
+            dispatch(closeDeleteCategoryDialog());
         }
     };
 
@@ -32,12 +32,12 @@ const DeleteCategoryDialog = (props) => {
         axios.request({
             method: "delete",
             url: "/api/category",
-            data: { id: openDeleteDialogData.categoryId },
+            data: { id: deleteCategoryDialog.id },
         })
             .then(response => {
                 setDisableDialogButtons(false);
                 dispatch(openSnackbar(true, response.data.message, "success"));
-                setOpenDeleteDialogData({ ...openDeleteDialogData, openDialog: false });
+                dispatch(closeDeleteCategoryDialog());
                 dispatch(getUserCategories());
             })
             .catch(error => {
@@ -48,13 +48,13 @@ const DeleteCategoryDialog = (props) => {
 
     return (
         <Dialog
-            open={openDeleteDialogData.openDialog}
+            open={deleteCategoryDialog.openDialog}
             TransitionComponent={Transition}
             keepMounted
             onClose={handleCloseDialog}
             aria-describedby="alert-dialog-slide-description"
         >
-            <DialogTitle>Do you want to delete category "{openDeleteDialogData.categoryName}"?</DialogTitle>
+            <DialogTitle>Do you want to delete category "{deleteCategoryDialog.name}"?</DialogTitle>
             <DialogActions>
                 <Button disabled={disableDialogButtons} size="small" variant="text" onClick={handleCloseDialog}>Cancel</Button>
                 <Button disabled={disableDialogButtons} size="small" variant="contained" onClick={handleDeleteCategory}>Delete</Button>
@@ -62,10 +62,5 @@ const DeleteCategoryDialog = (props) => {
         </Dialog>
     );
 }
-
-DeleteCategoryDialog.propTypes = {
-    openDeleteDialogData: PropTypes.object.isRequired,
-    setOpenDeleteDialogData: PropTypes.func.isRequired,
-};
 
 export default DeleteCategoryDialog;
