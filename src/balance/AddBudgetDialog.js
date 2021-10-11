@@ -190,7 +190,7 @@ const AddBudgetDialog = (props) => {
                                     {...params}
                                     required
                                     variant="standard"
-                                    label="Select category or type new"
+                                    label="Select category or type name to add new"
                                     InputProps={{
                                         ...params.InputProps,
                                         endAdornment: (

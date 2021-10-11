@@ -41,10 +41,31 @@ const editBudgetDialogReducer = (state = editBudgetDialogState, { type, payload 
         case types.OPEN_EDIT_BUDGET:
             return {
                 openDialog: payload.openDialog,
-                balanceId: payload.balanceId
+                balanceId: payload.balanceId,
             }
         case types.CLOSE_EDIT_BUDGET:
             return editBudgetDialogState
+        default:
+            return state
+    }
+}
+
+// Initial Delete Budget Dialog state
+const deleteBudgetDialogState = {
+    openDialog: false,
+    balanceId: null,
+}
+
+// Delete Budget Dialog reducer
+const deleteBudgetDialogReducer = (state = deleteBudgetDialogState, { type, payload }) => {
+    switch (type) {
+        case types.OPEN_DELETE_BUDGET:
+            return {
+                openDialog: payload.openDialog,
+                balanceId: payload.balanceId,
+            }
+        case types.CLOSE_DELETE_BUDGET:
+            return deleteBudgetDialogState
         default:
             return state
     }
@@ -153,6 +174,7 @@ const userBalancesReducer = (state = initialUserBalancesState, { type, payload }
 const reducers = {
     snackbar: snackbarReducer,
     editBudgetDialog: editBudgetDialogReducer,
+    deleteBudgetDialog: deleteBudgetDialogReducer,
     userWallets: userWalletsReducer,
     userCategories: userCategoriesReducer,
     userBalances: userBalancesReducer,

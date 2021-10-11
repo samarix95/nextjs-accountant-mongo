@@ -250,6 +250,10 @@ handler.put(async (req, res) => {
             return res.status(400).json({ message: `Balance not found (ID '${categoryId}')` });
         }
 
+        if (existBalance.balance == value && existBalance.categoryId == categoryId) {
+            return res.status(400).json({ message: `Nothing to update` });
+        }
+
         // Check if get category with the same spending type
         const needCategory = await req.db.collection('categories').findOne({
             _id: ObjectId(categoryId),
@@ -327,6 +331,53 @@ handler.put(async (req, res) => {
         });
 
         return res.status(200).json({ message: `Balance was update successful` });
+
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ message: new Error(error).message });
+    }
+});
+
+handler.delete(async (req, res) => {
+    const session = await getSession({ req });
+
+    if (!session) {
+        return res.status(401).json({ message: "You're not autorized" });
+    }
+
+    const { id } = req.body;
+    const userId = session.user.id;
+
+    if (id === null || id === "") {
+        return res.status(400).json({ message: "Balance id is required" });
+    }
+
+    try {
+        // Check if balance exists
+        const existBalance = await req.db.collection('balances').findOne({
+            userId: userId,
+            _id: ObjectId(id),
+        });
+
+        if (existBalance === null) {
+            return res.status(400).json({ message: `Nothing to delete (ID '${categoryId}')` });
+        }
+
+        // Delete history
+        await req.db.collection('balances_history').deleteMany({
+            userId: userId,
+            categoryId: existBalance.categoryId,
+            year: existBalance.year,
+            month: existBalance.month,
+        });
+
+        // Delete balance
+        await req.db.collection('balances').deleteOne({
+            userId: userId,
+            _id: ObjectId(id),
+        });
+
+        return res.status(200).json({ message: `Balance was deleted` });
 
     } catch (error) {
         console.log(error)

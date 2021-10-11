@@ -2,7 +2,7 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 
-import { openEditBudgetDialog } from '../../actions';
+import { openEditBudgetDialog, openDeleteBudgetDialog } from '../../actions';
 
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -30,7 +30,7 @@ const Row = (props) => {
     }
 
     const handleDeleteBalance = (event, id) => {
-        console.log(id);
+        dispatch(openDeleteBudgetDialog(true, id));
     }
 
     const handleEditBalanceHisrory = (event, id) => {

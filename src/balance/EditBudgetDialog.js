@@ -55,7 +55,7 @@ const EditBudgetDialog = () => {
         setValue(event.target.value);
     }
 
-    const handleAddNewBudget = () => {
+    const handleEditBudget = () => {
         if (selectedCategory === null) {
             dispatch(openSnackbar(true, "Select category", "error"));
             return;
@@ -142,7 +142,7 @@ const EditBudgetDialog = () => {
                                     {...params}
                                     required
                                     variant="standard"
-                                    label="Select category or type new"
+                                    label="Select category or type name to add new"
                                     InputProps={{
                                         ...params.InputProps,
                                         endAdornment: (
@@ -156,19 +156,19 @@ const EditBudgetDialog = () => {
                             )}
                         />
                         <TextField
+                            required
                             id="buget-value"
                             variant="standard"
-                            label="Value"
+                            label="Balance"
                             type="number"
                             value={value}
                             onChange={handleSetNewValue}
-                            required
                         />
                     </Stack>
                 </DialogContent>
                 <DialogActions>
                     <Button disabled={disableDialogButtons} size="small" variant="text" onClick={handleCloseDialog}>Cancel</Button>
-                    <Button disabled={disableDialogButtons} size="small" variant="contained" onClick={handleAddNewBudget}>Update</Button>
+                    <Button disabled={disableDialogButtons} size="small" variant="contained" onClick={handleEditBudget}>Update</Button>
                 </DialogActions>
             </Dialog >
             <AddCategoryDialog openAddDialogData={openAddCategoryDialogData} setOpenAddDialogData={setOpenAddCategoryDialogData} />

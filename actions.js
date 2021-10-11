@@ -27,6 +27,20 @@ export const closeEditBudgetDialog = () => (dispatch) => dispatch({
     type: types.CLOSE_EDIT_BUDGET,
 })
 
+// Open Delete Budget Dialog
+export const openDeleteBudgetDialog = (open, balanceId) => (dispatch) => dispatch({
+    type: types.OPEN_DELETE_BUDGET,
+    payload: {
+        openDialog: open,
+        balanceId: balanceId,
+    },
+})
+
+// Close Delete Budget Dialog
+export const closeDeleteBudgetDialog = () => (dispatch) => dispatch({
+    type: types.CLOSE_DELETE_BUDGET,
+})
+
 // Get user wallets
 export const getUserWallets = () => {
     return dispatch => {
