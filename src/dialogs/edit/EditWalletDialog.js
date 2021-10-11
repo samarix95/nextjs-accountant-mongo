@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
 
-import { openSnackbar, getUserCategories } from '../../actions';
+import { openSnackbar, getUserWallets } from '../../../actions';
 
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -13,9 +13,6 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import Slide from '@mui/material/Slide';
-import FormGroup from '@mui/material/FormGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 
@@ -23,7 +20,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="down" ref={ref} {...props} />;
 });
 
-const EditCategoryDialog = (props) => {
+const EditWalletDialog = (props) => {
     const { openEditDialogData, setOpenEditDialogData } = props;
     const dispatch = useDispatch();
     const theme = useTheme();
@@ -37,30 +34,26 @@ const EditCategoryDialog = (props) => {
         }
     };
 
-    const handleChangeIsSpend = (event) => {
-        setOpenEditDialogData({ ...openEditDialogData, isSpending: event.target.checked });
+    const handleChangeNewWalletName = (event) => {
+        setOpenEditDialogData({ ...openEditDialogData, walletName: event.target.value });
     }
 
-    const handleChangeNewCategoryName = (event) => {
-        setOpenEditDialogData({ ...openEditDialogData, categoryName: event.target.value });
+    const handleChangeNewWalletDescription = (event) => {
+        setOpenEditDialogData({ ...openEditDialogData, walletDescription: event.target.value });
     }
 
-    const handleChangeNewCategoryDescription = (event) => {
-        setOpenEditDialogData({ ...openEditDialogData, categoryDescription: event.target.value });
-    }
-
-    const handleAddNewCategory = () => {
+    const handleAddNewWallet = () => {
         setDisableDialogButtons(true);
         axios.request({
             method: "put",
-            url: "/api/category",
-            data: { id: openEditDialogData.categoryId, categoryName: openEditDialogData.categoryName, categoryDescription: openEditDialogData.categoryDescription, isSpending: openEditDialogData.isSpending },
+            url: "/api/wallet",
+            data: { id: openEditDialogData.walletId, walletName: openEditDialogData.walletName, walletDescription: openEditDialogData.walletDescription },
         })
             .then(response => {
                 setDisableDialogButtons(false);
                 dispatch(openSnackbar(true, response.data.message, "success"));
                 setOpenEditDialogData({ ...openEditDialogData, openDialog: false });
-                dispatch(getUserCategories());
+                dispatch(getUserWallets());
             })
             .catch(error => {
                 setDisableDialogButtons(false);
@@ -77,30 +70,27 @@ const EditCategoryDialog = (props) => {
             onClose={handleCloseDialog}
             aria-describedby="alert-dialog-slide-description"
         >
-            <DialogTitle>Edit category</DialogTitle>
+            <DialogTitle>Edit wallet</DialogTitle>
             <DialogContent>
                 <Stack spacing={1}>
-                    <FormGroup>
-                        <FormControlLabel control={<Checkbox color="default" checked={openEditDialogData.isSpending || false} onChange={handleChangeIsSpend} />} label="Is spending" />
-                    </FormGroup>
                     <TextField
                         disabled={disableDialogButtons}
-                        value={openEditDialogData.categoryName || ''}
+                        value={openEditDialogData.walletName || ''}
                         required
-                        id="category-name-field"
-                        label="Category name"
+                        id="wallet-name-field"
+                        label="Wallet name"
                         size="small"
                         variant="standard"
-                        onChange={handleChangeNewCategoryName}
+                        onChange={handleChangeNewWalletName}
                     />
                     <TextField
                         disabled={disableDialogButtons}
-                        value={openEditDialogData.categoryDescription || ''}
-                        id="category-description-field"
-                        label="Category description"
+                        value={openEditDialogData.walletDescription || ''}
+                        id="wallet-description-field"
+                        label="Wallet description"
                         size="small"
                         variant="standard"
-                        onChange={handleChangeNewCategoryDescription}
+                        onChange={handleChangeNewWalletDescription}
                         multiline
                         rows={2}
                     />
@@ -108,15 +98,15 @@ const EditCategoryDialog = (props) => {
             </DialogContent>
             <DialogActions>
                 <Button disabled={disableDialogButtons} size="small" variant="text" onClick={handleCloseDialog}>Cancel</Button>
-                <Button disabled={disableDialogButtons} size="small" variant="contained" onClick={handleAddNewCategory}>Update</Button>
+                <Button disabled={disableDialogButtons} size="small" variant="contained" onClick={handleAddNewWallet}>Update</Button>
             </DialogActions>
         </Dialog>
     );
 }
 
-EditCategoryDialog.propTypes = {
+EditWalletDialog.propTypes = {
     openEditDialogData: PropTypes.object.isRequired,
     setOpenEditDialogData: PropTypes.func.isRequired,
 };
 
-export default EditCategoryDialog;
+export default EditWalletDialog;

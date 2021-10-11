@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { useSelector } from 'react-redux';
 
-import AddCategoryDialog from '../src/category/AddCategoryDialog';
-import EditCategoryDialog from '../src/category/EditCategoryDialog';
-import DeleteCategoryDialog from '../src/category/DeleteCategoryDialog';
+import AddCategoryDialog from '../src/dialogs/add/AddCategoryDialog';
+import EditCategoryDialog from '../src/dialogs/edit/EditCategoryDialog';
+import DeleteCategoryDialog from '../src/dialogs/delete/DeleteCategoryDialog';
 import ProTip from '../src/ProTip';
 import Copyright from '../src/Copyright';
 

@@ -5,11 +5,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
 
 import SnackbarComponent from './global/Snackbar';
-import EditBudgetDialog from './balance/EditBudgetDialog';
-import DeleteBudgetDialog from './balance/DeleteBudgetDialog';
+import EditBudgetDialog from './dialogs/edit/EditBudgetDialog';
+import DeleteBudgetDialog from './dialogs/delete/DeleteBudgetDialog';
+import DeleteBudgetHistoryDialog from './dialogs/delete/DeleteBudgetHistoryDialog';
+import AddWalletDialog from './dialogs/add/AddWalletDialog';
 import { getUserWallets, getUserCategories, getUserBalances } from '../actions';
 import Link from './Link';
-import AddWalletDialog from './wallet/AddWalletDialog';
 
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -59,7 +60,7 @@ const HeaderComponent = (props) => {
     const { window } = props;
     const [session, loading] = useSession();
     const state = useSelector((state) => state);
-    const { userWallets, editBudgetDialog, deleteBudgetDialog } = state;
+    const { userWallets, editBudgetDialog, deleteBudgetDialog, deleteBudgetHistoryDialog } = state;
     const router = useRouter();
     const dispatch = useDispatch();
 
@@ -211,6 +212,7 @@ const HeaderComponent = (props) => {
             <SnackbarComponent />
             {editBudgetDialog.openDialog && <EditBudgetDialog />}
             {deleteBudgetDialog.openDialog && <DeleteBudgetDialog />}
+            {deleteBudgetHistoryDialog.openDialog && <DeleteBudgetHistoryDialog />}
             <AddWalletDialog openDialog={openDialog} setOpenDialog={setOpenDialog} />
             <Popper transition
                 open={openPooper}

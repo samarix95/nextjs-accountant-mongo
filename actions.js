@@ -36,6 +36,20 @@ export const openDeleteBudgetDialog = (open, balanceId) => (dispatch) => dispatc
     },
 })
 
+// Close Edit Budget History Dialog
+export const closeEditBudgetHistoryDialog = () => (dispatch) => dispatch({
+    type: types.CLOSE_EDIT_BUDGET_HISTORY,
+})
+
+// Open Delete Budget History Dialog
+export const openDeleteBudgeHistorytDialog = (open, balanceId) => (dispatch) => dispatch({
+    type: types.OPEN_EDIT_BUDGET_HISTORY,
+    payload: {
+        openDialog: open,
+        balanceId: balanceId,
+    },
+})
+
 // Close Delete Budget Dialog
 export const closeDeleteBudgetDialog = () => (dispatch) => dispatch({
     type: types.CLOSE_DELETE_BUDGET,

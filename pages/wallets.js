@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { useSelector } from 'react-redux';
 
-import AddWalletDialog from '../src/wallet/AddWalletDialog';
-import DeleteWalletDialog from '../src/wallet/DeleteWalletDialog';
-import EditWalletDialog from '../src/wallet/EditWalletDialog';
+import AddWalletDialog from '../src/dialogs/add/AddWalletDialog';
+import DeleteWalletDialog from '../src/dialogs/delete/DeleteWalletDialog';
+import EditWalletDialog from '../src/dialogs/edit/EditWalletDialog';
 import ProTip from '../src/ProTip';
 import Copyright from '../src/Copyright';
 

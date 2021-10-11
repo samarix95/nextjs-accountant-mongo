@@ -2,7 +2,7 @@ import * as React from 'react';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { openSnackbar, getUserBalances, closeDeleteBudgetDialog } from '../../actions';
+import { openSnackbar, getUserBalances, closeEditBudgetHistoryDialog } from '../../../actions';
 
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -18,19 +18,18 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="down" ref={ref} {...props} />;
 });
 
-const DeleteBudgetDialog = () => {
+const DeleteBudgetHistoryDialog = () => {
     const dispatch = useDispatch();
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
     const state = useSelector((state) => state);
-    const { userBalances, deleteBudgetDialog } = state;
-    const balanceData = userBalances.data.find(x => x._id === deleteBudgetDialog.balanceId);
+    const { deleteBudgetHistoryDialog } = state;
 
     const [disableDialogButtons, setDisableDialogButtons] = React.useState(false);
 
     const handleCloseDialog = () => {
         if (!disableDialogButtons) {
-            dispatch(closeDeleteBudgetDialog());
+            dispatch(closeEditBudgetHistoryDialog());
         }
     };
 
@@ -38,13 +37,13 @@ const DeleteBudgetDialog = () => {
         setDisableDialogButtons(true);
         axios.request({
             method: "delete",
-            url: "/api/balance",
-            data: { id: deleteBudgetDialog.balanceId },
+            url: "/api/balance-history",
+            data: { id: deleteBudgetHistoryDialog.balanceId },
         })
             .then(response => {
                 setDisableDialogButtons(false);
                 dispatch(openSnackbar(true, response.data.message, "success"));
-                dispatch(closeDeleteBudgetDialog());
+                dispatch(closeEditBudgetHistoryDialog());
                 dispatch(getUserBalances());
             })
             .catch(error => {
@@ -56,16 +55,16 @@ const DeleteBudgetDialog = () => {
     return (
         <Dialog
             fullScreen={fullScreen}
-            open={deleteBudgetDialog.openDialog}
+            open={deleteBudgetHistoryDialog.openDialog}
             TransitionComponent={Transition}
             keepMounted
             onClose={handleCloseDialog}
             aria-describedby="alert-dialog-slide-description"
         >
-            <DialogTitle>{`Delete balance ${balanceData.categoryData.name}?`}</DialogTitle>
+            <DialogTitle>{`Delete history?`}</DialogTitle>
             <DialogContent>
                 <DialogContentText>
-                    Balance and his history will be delete.
+                    Balance history will be delete.
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
@@ -76,4 +75,4 @@ const DeleteBudgetDialog = () => {
     );
 }
 
-export default DeleteBudgetDialog;
+export default DeleteBudgetHistoryDialog;

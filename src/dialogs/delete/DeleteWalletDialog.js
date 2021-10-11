@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
 
-import { openSnackbar, getUserWallets } from '../../actions';
+import { openSnackbar, getUserWallets } from '../../../actions';
 
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';

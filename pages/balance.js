@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 
 import ProTip from '../src/ProTip';
 import Copyright from '../src/Copyright';
-import AddBudgetDialog from '../src/balance/AddBudgetDialog';
+import AddBudgetDialog from '../src/dialogs/add/AddBudgetDialog';
 import Row from '../src/balance/Row';
 
 import Container from '@mui/material/Container';
