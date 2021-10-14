@@ -13,6 +13,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import Slide from '@mui/material/Slide';
+import Box from '@mui/material/Box';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 
@@ -81,29 +82,31 @@ const AddWalletDialog = (props) => {
         >
             <DialogTitle>Add new wallet</DialogTitle>
             <DialogContent>
-                <Stack spacing={1}>
-                    <TextField
-                        disabled={disableDialogButtons}
-                        value={newWalletName}
-                        required
-                        id="wallet-name-field"
-                        label="Wallet name"
-                        size="small"
-                        variant="standard"
-                        onChange={handleChangeNewWalletName}
-                    />
-                    <TextField
-                        disabled={disableDialogButtons}
-                        value={newWalletDescription}
-                        id="wallet-description-field"
-                        label="Wallet description"
-                        size="small"
-                        variant="standard"
-                        onChange={handleChangeNewWalletDescription}
-                        multiline
-                        rows={2}
-                    />
-                </Stack>
+                <Box sx={{ p: 1 }}>
+                    <Stack spacing={1}>
+                        <TextField
+                            disabled={disableDialogButtons}
+                            value={newWalletName}
+                            required
+                            id="wallet-name-field"
+                            label="Wallet name"
+                            size="small"
+                            variant="standard"
+                            onChange={handleChangeNewWalletName}
+                        />
+                        <TextField
+                            disabled={disableDialogButtons}
+                            value={newWalletDescription}
+                            id="wallet-description-field"
+                            label="Wallet description"
+                            size="small"
+                            variant="standard"
+                            onChange={handleChangeNewWalletDescription}
+                            multiline
+                            rows={2}
+                        />
+                    </Stack>
+                </Box>
             </DialogContent>
             <DialogActions>
                 <Button disabled={disableDialogButtons} size="small" variant="text" onClick={handleCloseDialog}>Cancel</Button>

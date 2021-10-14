@@ -3,7 +3,6 @@ import nextConnect from 'next-connect';
 
 import middleware from '../../../middleware/database';
 
-
 const ObjectId = require('mongodb').ObjectId;
 const handler = nextConnect();
 handler.use(middleware);
@@ -18,7 +17,10 @@ handler.get(async (req, res) => {
     const userId = session.user.id;
 
     try {
-        const wallets = await req.db.collection('wallets').find({ userId: userId, isDeleted: false }).toArray();
+        const wallets = await req.db.collection('wallets').find({
+            userId: userId,
+            isDeleted: false,
+        }).toArray();
 
         return res.status(200).json({
             message: "",
@@ -50,31 +52,29 @@ handler.post(async (req, res) => {
         return res.status(400).json({ message: "Wallet name is required" });
     }
 
-    // Try to find exist user wallets
     try {
-        const wallets = await req.db.collection('wallets').findOne({ userId: userId, name: walletName, isDeleted: false });
+        // Try to find exist user wallets
+        const wallets = await req.db.collection('wallets').findOne({
+            userId: userId,
+            name: walletName,
+            isDeleted: false,
+        });
+
         if (wallets !== null) {
-            return res.status(400).json({
-                message: `You have wallet '${walletName}'`,
-            });
+            return res.status(400).json({ message: `You have wallet '${walletName}'`, });
         }
-    } catch (error) {
-        return res.status(500).json({
-            message: new Error(error).message,
-        });
-    }
 
-    // Add new wallet
-    try {
-        await req.db.collection('wallets').insertOne({ userId: userId, name: walletName, description: walletDescription === null ? '' : walletDescription, isDeleted: false, deleteDate: null });
-
-        return res.status(200).json({
-            message: `Wallet '${walletName}' was added successful`,
-        })
-    } catch (error) {
-        return res.status(500).json({
-            message: new Error(error).message,
+        // Add new wallet
+        await req.db.collection('wallets').insertOne({
+            userId: userId,
+            name: walletName,
+            description: walletDescription === null ? '' : walletDescription,
+            isDeleted: false,
         });
+
+        return res.status(200).json({ message: `Wallet '${walletName}' was added successful` })
+    } catch (error) {
+        return res.status(500).json({ message: new Error(error).message });
     }
 });
 
@@ -100,31 +100,30 @@ handler.put(async (req, res) => {
         return res.status(400).json({ message: "Wallet name is required" });
     }
 
-    // Try to find exist user wallet
     try {
-        const wallets = await req.db.collection('wallets').findOne({ userId: userId, _id: ObjectId(id) });
+        // Try to find exist user wallet
+        const wallets = await req.db.collection('wallets').findOne({
+            userId: userId,
+            _id: ObjectId(id),
+            isDeleted: false,
+        });
+
         if (wallets === null) {
-            return res.status(404).json({
-                message: "Nothing to update",
-            });
+            return res.status(404).json({ message: "Nothing to update" });
         }
-    } catch (error) {
-        return res.status(500).json({
-            message: new Error(error).message,
-        });
-    }
 
-    // Update wallet
-    try {
-        await req.db.collection('wallets').updateOne({ _id: ObjectId(id), userId: userId }, { $set: { name: walletName, description: walletDescription === null ? '' : walletDescription } });
-
-        return res.status(200).json({
-            message: `Wallet was updated`,
-        })
-    } catch (error) {
-        return res.status(500).json({
-            message: new Error(error).message,
+        await req.db.collection('wallets').updateOne({
+            _id: ObjectId(id),
+        }, {
+            $set: {
+                name: walletName,
+                description: walletDescription === null ? '' : walletDescription,
+            }
         });
+
+        return res.status(200).json({ message: `Wallet was updated` })
+    } catch (error) {
+        return res.status(500).json({ message: new Error(error).message });
     }
 });
 
@@ -142,34 +141,50 @@ handler.delete(async (req, res) => {
         return res.status(404).json({ message: "Nothing to delete" });
     }
 
-    let walletName = "";
-
-    // Try to find exist user wallet
     try {
-        const wallets = await req.db.collection('wallets').findOne({ userId: userId, _id: ObjectId(id) });
+        // Try to find exist user wallet
+        const wallets = await req.db.collection('wallets').findOne({
+            _id: ObjectId(id),
+            userId: userId,
+            isDeleted: false,
+        });
+
         if (wallets === null) {
-            return res.status(404).json({
-                message: "Nothing to delete",
-            });
+            return res.status(404).json({ message: "Nothing to delete" });
         }
-        walletName = wallets.name;
-    } catch (error) {
-        return res.status(500).json({
-            message: new Error(error).message,
-        });
-    }
 
-    // Delete wallet
-    try {
-        await req.db.collection('wallets').updateOne({ _id: ObjectId(id), userId: userId }, { $set: { isDeleted: true, deleteDate: new Date() } });
-
-        return res.status(200).json({
-            message: `Wallet '${walletName}' was deleted`,
-        })
-    } catch (error) {
-        return res.status(500).json({
-            message: new Error(error).message,
+        // Delete balance
+        await req.db.collection('balances').updateMany({
+            userId: userId,
+            walletId: id,
+        }, {
+            $set: {
+                isDeleted: true,
+            }
         });
+
+        // Delete history
+        await req.db.collection('balances_history').updateMany({
+            userId: userId,
+            walletId: id,
+        }, {
+            $set: {
+                isDeleted: true,
+            }
+        });
+
+        // Delete wallet
+        await req.db.collection('wallets').updateOne({
+            _id: ObjectId(id),
+        }, {
+            $set: {
+                isDeleted: true,
+            }
+        });
+
+        return res.status(200).json({ message: `Wallet '${wallets.name}' was deleted` })
+    } catch (error) {
+        return res.status(500).json({ message: new Error(error).message });
     }
 });
 

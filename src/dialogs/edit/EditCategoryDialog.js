@@ -12,6 +12,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import Slide from '@mui/material/Slide';
+import Box from '@mui/material/Box';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
@@ -82,41 +83,43 @@ const EditCategoryDialog = () => {
         >
             <DialogTitle>Edit category</DialogTitle>
             <DialogContent>
-                <Stack spacing={1}>
-                    <FormGroup>
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    color="default"
-                                    checked={isSpending}
-                                    onChange={handleChangeIsSpend}
-                                />
-                            }
-                            label="Is spending"
+                <Box sx={{ p: 1 }}>
+                    <Stack spacing={1}>
+                        <FormGroup>
+                            <FormControlLabel
+                                control={
+                                    <Checkbox
+                                        color="default"
+                                        checked={isSpending}
+                                        onChange={handleChangeIsSpend}
+                                    />
+                                }
+                                label="Is spending"
+                            />
+                        </FormGroup>
+                        <TextField
+                            disabled={disableDialogButtons}
+                            value={newCategoryName}
+                            required
+                            id="category-name-field"
+                            label="Category name"
+                            size="small"
+                            variant="standard"
+                            onChange={handleChangeNewCategoryName}
                         />
-                    </FormGroup>
-                    <TextField
-                        disabled={disableDialogButtons}
-                        value={newCategoryName}
-                        required
-                        id="category-name-field"
-                        label="Category name"
-                        size="small"
-                        variant="standard"
-                        onChange={handleChangeNewCategoryName}
-                    />
-                    <TextField
-                        disabled={disableDialogButtons}
-                        value={newCategoryDescription}
-                        id="category-description-field"
-                        label="Category description"
-                        size="small"
-                        variant="standard"
-                        onChange={handleChangeNewCategoryDescription}
-                        multiline
-                        rows={2}
-                    />
-                </Stack>
+                        <TextField
+                            disabled={disableDialogButtons}
+                            value={newCategoryDescription}
+                            id="category-description-field"
+                            label="Category description"
+                            size="small"
+                            variant="standard"
+                            onChange={handleChangeNewCategoryDescription}
+                            multiline
+                            rows={2}
+                        />
+                    </Stack>
+                </Box>
             </DialogContent>
             <DialogActions>
                 <Button disabled={disableDialogButtons} size="small" variant="text" onClick={handleCloseDialog}>Cancel</Button>

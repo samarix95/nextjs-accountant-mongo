@@ -16,6 +16,7 @@ import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import Box from '@mui/material/Box';
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import CircularProgress from '@mui/material/CircularProgress';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -99,95 +100,97 @@ const EditBudgetDialog = () => {
             >
                 <DialogTitle>Edit balance</DialogTitle>
                 <DialogContent>
-                    <Stack spacing={2}>
-                        <FormControl required>
-                            <InputLabel id="wallet-simple-select-label">Wallet</InputLabel>
-                            <Select
-                                labelId="wallet-simple-select-label"
-                                id="wallet-simple-select"
-                                value={changedWallet}
-                                label="Wallet *"
+                    <Box sx={{ p: 1 }}>
+                        <Stack spacing={2}>
+                            <FormControl required>
+                                <InputLabel id="wallet-simple-select-label">Wallet</InputLabel>
+                                <Select
+                                    labelId="wallet-simple-select-label"
+                                    id="wallet-simple-select"
+                                    value={changedWallet}
+                                    label="Wallet *"
+                                    fullWidth
+                                    onChange={handleChangeWallet}
+                                >
+                                    {userWallets.data.map((item, key) => (
+                                        <MenuItem key={key} value={item._id}>{item.name}</MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                            <Autocomplete
+                                selectOnFocus
+                                clearOnBlur
+                                handleHomeEndKeys
+                                id="free-solo-categories"
+                                options={availableCategories}
+                                value={selectedCategory}
+                                freeSolo
                                 fullWidth
-                                onChange={handleChangeWallet}
-                            >
-                                {userWallets.data.map((item, key) => (
-                                    <MenuItem key={key} value={item._id}>{item.name}</MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                        <Autocomplete
-                            selectOnFocus
-                            clearOnBlur
-                            handleHomeEndKeys
-                            id="free-solo-categories"
-                            options={availableCategories}
-                            value={selectedCategory}
-                            freeSolo
-                            fullWidth
-                            disabled={userCategories.loading}
-                            sx={{ minWidth: 300 }}
-                            onChange={(event, newValue) => {
-                                if (typeof newValue === 'string') {
-                                    setSelectedCategory({ name: newValue });
-                                } else if (newValue && newValue.inputValue) {
-                                    // Create a new value from the user input
-                                    dispatch(openAddCategoryDialog(Boolean(openEditBudgetDialogData.isSpending), newValue.inputValue, ""));
-                                } else {
-                                    setSelectedCategory(newValue);
-                                }
-                            }}
-                            filterOptions={(options, params) => {
-                                const filtered = filter(options, params);
-                                const { inputValue } = params;
-                                // Suggest the creation of a new value
-                                const isExisting = options.some((option) => inputValue === option.name);
-                                if (inputValue !== '' && !isExisting) {
-                                    filtered.push({ inputValue, name: `Add new category "${inputValue}"` });
-                                }
+                                disabled={userCategories.loading}
+                                sx={{ minWidth: 300 }}
+                                onChange={(event, newValue) => {
+                                    if (typeof newValue === 'string') {
+                                        setSelectedCategory({ name: newValue });
+                                    } else if (newValue && newValue.inputValue) {
+                                        // Create a new value from the user input
+                                        dispatch(openAddCategoryDialog(Boolean(openEditBudgetDialogData.isSpending), newValue.inputValue, ""));
+                                    } else {
+                                        setSelectedCategory(newValue);
+                                    }
+                                }}
+                                filterOptions={(options, params) => {
+                                    const filtered = filter(options, params);
+                                    const { inputValue } = params;
+                                    // Suggest the creation of a new value
+                                    const isExisting = options.some((option) => inputValue === option.name);
+                                    if (inputValue !== '' && !isExisting) {
+                                        filtered.push({ inputValue, name: `Add new category "${inputValue}"` });
+                                    }
 
-                                return filtered;
-                            }}
-                            getOptionLabel={(option) => {
-                                // Value selected with enter, right from the input
-                                if (typeof option === 'string') {
-                                    return option;
-                                }
-                                // Add "xxx" option created dynamically
-                                if (option.inputValue) {
-                                    return option.inputValue;
-                                }
-                                // Regular option
-                                return option.name;
-                            }}
-                            renderOption={(props, option) => <li {...props}>{option.name}</li>}
-                            renderInput={(params) => (
-                                <TextField
-                                    {...params}
-                                    required
-                                    variant="standard"
-                                    label="Select category or type name to add new"
-                                    InputProps={{
-                                        ...params.InputProps,
-                                        endAdornment: (
-                                            <React.Fragment>
-                                                {userCategories.loading && (<CircularProgress color="inherit" size={20} />)}
-                                                {params.InputProps.endAdornment}
-                                            </React.Fragment>
-                                        ),
-                                    }}
-                                />
-                            )}
-                        />
-                        <TextField
-                            required
-                            id="buget-value"
-                            variant="standard"
-                            label="Balance"
-                            type="number"
-                            value={value}
-                            onChange={handleSetNewValue}
-                        />
-                    </Stack>
+                                    return filtered;
+                                }}
+                                getOptionLabel={(option) => {
+                                    // Value selected with enter, right from the input
+                                    if (typeof option === 'string') {
+                                        return option;
+                                    }
+                                    // Add "xxx" option created dynamically
+                                    if (option.inputValue) {
+                                        return option.inputValue;
+                                    }
+                                    // Regular option
+                                    return option.name;
+                                }}
+                                renderOption={(props, option) => <li {...props}>{option.name}</li>}
+                                renderInput={(params) => (
+                                    <TextField
+                                        {...params}
+                                        required
+                                        variant="standard"
+                                        label="Select category or type name to add new"
+                                        InputProps={{
+                                            ...params.InputProps,
+                                            endAdornment: (
+                                                <React.Fragment>
+                                                    {userCategories.loading && (<CircularProgress color="inherit" size={20} />)}
+                                                    {params.InputProps.endAdornment}
+                                                </React.Fragment>
+                                            ),
+                                        }}
+                                    />
+                                )}
+                            />
+                            <TextField
+                                required
+                                id="buget-value"
+                                variant="standard"
+                                label="Balance"
+                                type="number"
+                                value={value}
+                                onChange={handleSetNewValue}
+                            />
+                        </Stack>
+                    </Box>
                 </DialogContent>
                 <DialogActions>
                     <Button disabled={disableDialogButtons} size="small" variant="text" onClick={handleCloseDialog}>Cancel</Button>

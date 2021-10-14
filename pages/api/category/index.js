@@ -19,7 +19,7 @@ handler.get(async (req, res) => {
     try {
         const categories = await req.db.collection('categories').find({
             userId: userId,
-            isDeleted: false
+            isDeleted: false,
         }).toArray();
 
         return res.status(200).json({
@@ -52,8 +52,8 @@ handler.post(async (req, res) => {
         return res.status(400).json({ message: "Category name is required" });
     }
 
-    // Try to find exist user categories
     try {
+        // Try to find exist user categories
         const category = await req.db.collection('categories').findOne({
             userId: userId,
             name: categoryName,
@@ -61,34 +61,21 @@ handler.post(async (req, res) => {
         });
 
         if (category !== null) {
-            return res.status(400).json({
-                message: `You have category '${category}'`,
-            });
+            return res.status(400).json({ message: `You have category '${category}'`, });
         }
-    } catch (error) {
-        return res.status(500).json({
-            message: new Error(error).message,
-        });
-    }
 
-    // Add new category
-    try {
+        // Add new category
         await req.db.collection('categories').insertOne({
             userId: userId,
             name: categoryName,
             description: categoryDescription === null ? '' : categoryDescription,
             isSpending: isSpending,
             isDeleted: false,
-            deleteDate: null,
         });
 
-        return res.status(200).json({
-            message: `Category '${categoryName}' was added successful`,
-        })
+        return res.status(200).json({ message: `Category '${categoryName}' was added successful`, });
     } catch (error) {
-        return res.status(500).json({
-            message: new Error(error).message,
-        });
+        return res.status(500).json({ message: new Error(error).message, });
     }
 });
 
@@ -114,23 +101,22 @@ handler.put(async (req, res) => {
         return res.status(400).json({ message: "Category name is required" });
     }
 
-    // Try to find exist user category
     try {
-        const category = await req.db.collection('categories').findOne({ userId: userId, _id: ObjectId(id) });
-        if (category === null) {
-            return res.status(404).json({
-                message: "Nothing to update",
-            });
-        }
-    } catch (error) {
-        return res.status(500).json({
-            message: new Error(error).message,
+        // Try to find exist user category
+        const category = await req.db.collection('categories').findOne({
+            userId: userId,
+            _id: ObjectId(id),
         });
-    }
 
-    // Update category
-    try {
-        await req.db.collection('categories').updateOne({ _id: ObjectId(id), userId: userId }, {
+        if (category === null) {
+            return res.status(404).json({ message: "Nothing to update", });
+        }
+
+        // Update category
+        await req.db.collection('categories').updateOne({
+            _id: ObjectId(id),
+            userId: userId,
+        }, {
             $set: {
                 name: categoryName,
                 description: categoryDescription === null ? '' : categoryDescription,
@@ -138,13 +124,9 @@ handler.put(async (req, res) => {
             }
         });
 
-        return res.status(200).json({
-            message: `Category was updated`,
-        })
+        return res.status(200).json({ message: `Category was updated`, });
     } catch (error) {
-        return res.status(500).json({
-            message: new Error(error).message,
-        });
+        return res.status(500).json({ message: new Error(error).message, });
     }
 });
 
@@ -162,34 +144,30 @@ handler.delete(async (req, res) => {
         return res.status(404).json({ message: "Nothing to delete" });
     }
 
-    let categoryName = "";
-
-    // Try to find exist user categories
     try {
-        const category = await req.db.collection('categories').findOne({ userId: userId, _id: ObjectId(id) });
+        // Try to find exist user categories
+        const category = await req.db.collection('categories').findOne({
+            userId: userId,
+            _id: ObjectId(id),
+        });
+
         if (category === null) {
-            return res.status(404).json({
-                message: "Nothing to delete",
-            });
+            return res.status(404).json({ message: "Nothing to delete", });
         }
-        categoryName = category.name;
-    } catch (error) {
-        return res.status(500).json({
-            message: new Error(error).message,
-        });
-    }
 
-    // Delete category
-    try {
-        await req.db.collection('categories').updateOne({ _id: ObjectId(id), userId: userId }, { $set: { isDeleted: true, deleteDate: new Date() } });
-
-        return res.status(200).json({
-            message: `Category '${categoryName}' was deleted`,
-        })
-    } catch (error) {
-        return res.status(500).json({
-            message: new Error(error).message,
+        // Delete category
+        await req.db.collection('categories').updateOne({
+            _id: ObjectId(id),
+            userId: userId,
+        }, {
+            $set: {
+                isDeleted: true,
+            }
         });
+
+        return res.status(200).json({ message: `Category '${category.name}' was deleted`, })
+    } catch (error) {
+        return res.status(500).json({ message: new Error(error).message, });
     }
 });
 

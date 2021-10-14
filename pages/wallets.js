@@ -56,28 +56,30 @@ const Wallets = () => {
                         </Typography>
                     </Stack>
                     : <Box sx={{ p: 1 }}>
-                        <Grid container spacing={2} justifyContent="center">
-                            {userWallets.data.map(item =>
-                                <Grid item key={item._id} sx={{ maxWidth: 500 }}>
-                                    <Card raised>
-                                        <CardContent>
-                                            <Typography variant="subtitle2" gutterBottom>
-                                                {item.name}
-                                            </Typography>
-                                            <Typography variant="body2" color="text.secondary">
-                                                {item.description !== "" ? item.description : "No description"}
-                                            </Typography>
-                                        </CardContent>
-                                        <CardActions>
-                                            <Stack direction="row" spacing={1}>
-                                                <Button size="small" color="inherit" startIcon={<EditIcon />} onClick={() => handleEditWallet(item._id, item.name, item.description)}>Edit</Button>
-                                                <Button size="small" color="inherit" startIcon={<DeleteIcon />} onClick={() => handleDeleteWallet(item._id, item.name)}>Delete</Button>
-                                            </Stack>
-                                        </CardActions>
-                                    </Card>
-                                </Grid>
-                            )}
-                        </Grid>
+                        {Object.keys(userWallets.data).length > 0 &&
+                            <Grid container spacing={2} justifyContent="center">
+                                {userWallets.data.map(item =>
+                                    <Grid item key={item._id} sx={{ maxWidth: 500 }}>
+                                        <Card raised>
+                                            <CardContent>
+                                                <Typography variant="subtitle2" gutterBottom>
+                                                    {item.name}
+                                                </Typography>
+                                                <Typography variant="body2" color="text.secondary">
+                                                    {item.description !== "" ? item.description : "No description"}
+                                                </Typography>
+                                            </CardContent>
+                                            <CardActions>
+                                                <Stack direction="row" spacing={1}>
+                                                    <Button size="small" color="inherit" startIcon={<EditIcon />} onClick={() => handleEditWallet(item._id, item.name, item.description)}>Edit</Button>
+                                                    <Button size="small" color="inherit" startIcon={<DeleteIcon />} onClick={() => handleDeleteWallet(item._id, item.name)}>Delete</Button>
+                                                </Stack>
+                                            </CardActions>
+                                        </Card>
+                                    </Grid>
+                                )}
+                            </Grid>
+                        }
                         <Box sx={{ p: 1, display: 'flex', justifyContent: 'center' }}>
                             <Button color="inherit" size="large" startIcon={<AddBoxIcon />} onClick={handleAddWallet}>
                                 Add wallet

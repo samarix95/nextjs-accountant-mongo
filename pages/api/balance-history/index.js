@@ -55,17 +55,20 @@ handler.put(async (req, res) => {
         if (existHistory.year !== year) {
             return res.status(400).json({ message: `Can't set another year` });
         }
-
+        const { walletId, categoryId, month, year } = existBalanceHistory;
         const valueDiff = parseFloat(value) - parseFloat(existHistory.value);
 
         // Update balance
         await req.db.collection('balances').updateOne({
             userId: userId,
-            categoryId: existHistory.categoryId,
-            year: existHistory.year,
-            month: existHistory.month,
+            walletId: walletId,
+            categoryId: categoryId,
+            year: year,
+            month: month,
         }, {
-            $inc: { balance: Number(parseFloat(valueDiff).toFixed(2)), },
+            $inc: {
+                balance: Number(parseFloat(valueDiff).toFixed(2)),
+            },
         });
 
         // Upadte balance history
@@ -78,9 +81,7 @@ handler.put(async (req, res) => {
         });
 
         return res.status(200).json({ message: `History was updated` });
-
     } catch (error) {
-        console.log(error)
         return res.status(500).json({ message: new Error(error).message });
     }
 });
@@ -102,36 +103,41 @@ handler.delete(async (req, res) => {
     try {
         // Check if balance history exists
         const existBalanceHistory = await req.db.collection('balances_history').findOne({
-            userId: userId,
             _id: ObjectId(id),
+            userId: userId,
         });
 
         if (existBalanceHistory === null) {
             return res.status(400).json({ message: `Nothing to delete (ID '${id}')` });
         }
 
-        const { value, categoryId, month, year } = existBalanceHistory;
+        const { value, walletId, categoryId, month, year } = existBalanceHistory;
 
         // Update exist balance
         await req.db.collection('balances').updateOne({
             userId: userId,
+            walletId: walletId,
             categoryId: categoryId,
             month: month,
             year: year,
         }, {
-            $inc: { balance: Number(-1 * parseFloat(value).toFixed(2)), },
+            $inc: {
+                balance: Number(-1 * parseFloat(value).toFixed(2)),
+            },
         });
 
         // Delete balance history
-        await req.db.collection('balances_history').deleteOne({
-            userId: userId,
+        await req.db.collection('balances_history').updateOne({
             _id: ObjectId(id),
+            userId: userId,
+        }, {
+            $set: {
+                isDeleted: true,
+            }
         });
 
         return res.status(200).json({ message: `History was deleted` });
-
     } catch (error) {
-        console.log(error)
         return res.status(500).json({ message: new Error(error).message });
     }
 });

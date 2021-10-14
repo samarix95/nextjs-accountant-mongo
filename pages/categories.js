@@ -93,87 +93,89 @@ const Categories = () => {
                         </Typography>
                     </Stack>
                     : <Box sx={{ p: 1 }}>
-                        <TableContainer component={Paper}>
-                            <Table aria-labelledby="tableTitle" >
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell sortDirection={orderBy === "name" ? order : false} >
-                                            <TableSortLabel
-                                                active={orderBy === "name"}
-                                                direction={orderBy === "name" ? order : "asc"}
-                                                onClick={createSortHandler("name")}
-                                            >
-                                                Name
-                                                {orderBy === "name"
-                                                    ? <Box sx={visuallyHidden}>
-                                                        {order === "desc" ? "sorted descending" : "sorted ascending"}
-                                                    </Box>
-                                                    : <React.Fragment />
-                                                }
-                                            </TableSortLabel>
-                                        </TableCell>
-                                        <TableCell align="right" sortDirection={orderBy === "isSpending" ? order : false} >
-                                            <TableSortLabel
-                                                active={orderBy === "isSpending"}
-                                                direction={orderBy === "isSpending" ? order : "asc"}
-                                                onClick={createSortHandler("isSpending")}
-                                            >
-                                                Is spending
-                                                {orderBy === "isSpending"
-                                                    ? <Box sx={visuallyHidden}>
-                                                        {order === "desc" ? "sorted descending" : "sorted ascending"}
-                                                    </Box>
-                                                    : <React.Fragment />
-                                                }
-                                            </TableSortLabel>
-                                        </TableCell>
-                                        <TableCell sortDirection={orderBy === "description" ? order : false} >
-                                            <TableSortLabel
-                                                active={orderBy === "description"}
-                                                direction={orderBy === "description" ? order : "asc"}
-                                                onClick={createSortHandler("description")}
-                                            >
-                                                Description
-                                                {orderBy === "description"
-                                                    ? <Box sx={visuallyHidden}>
-                                                        {order === "desc" ? "sorted descending" : "sorted ascending"}
-                                                    </Box>
-                                                    : <React.Fragment />
-                                                }
-                                            </TableSortLabel>
-                                        </TableCell>
-                                        <TableCell />
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {stableSort(userCategories.data, getComparator(order, orderBy))
-                                        .map((row, index) =>
-                                            <TableRow hover tabIndex={-1} key={index} >
-                                                <TableCell>{row.name}</TableCell>
-                                                <TableCell align="right">{row.isSpending ? "Yes" : "No"}</TableCell>
-                                                <TableCell>{row.description}</TableCell>
-                                                <TableCell>
-                                                    <Stack direction="row">
-                                                        <IconButton
-                                                            sx={{ marginLeft: "auto" }}
-                                                            size="small"
-                                                            onClick={(event) => handleEditCategory(event, row._id, row.name, row.description, row.isSpending)}
-                                                        >
-                                                            <EditIcon />
-                                                        </IconButton>
-                                                        <IconButton
-                                                            size="small"
-                                                            onClick={(event) => handleDeleteCategory(event, row._id, row.name)}
-                                                        >
-                                                            <DeleteIcon />
-                                                        </IconButton>
-                                                    </Stack>
-                                                </TableCell>
-                                            </TableRow>
-                                        )}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
+                        {Object.keys(userCategories.data).length > 0 &&
+                            <TableContainer component={Paper}>
+                                <Table aria-labelledby="tableTitle" >
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell sortDirection={orderBy === "name" ? order : false} >
+                                                <TableSortLabel
+                                                    active={orderBy === "name"}
+                                                    direction={orderBy === "name" ? order : "asc"}
+                                                    onClick={createSortHandler("name")}
+                                                >
+                                                    Name
+                                                    {orderBy === "name"
+                                                        ? <Box sx={visuallyHidden}>
+                                                            {order === "desc" ? "sorted descending" : "sorted ascending"}
+                                                        </Box>
+                                                        : <React.Fragment />
+                                                    }
+                                                </TableSortLabel>
+                                            </TableCell>
+                                            <TableCell align="right" sortDirection={orderBy === "isSpending" ? order : false} >
+                                                <TableSortLabel
+                                                    active={orderBy === "isSpending"}
+                                                    direction={orderBy === "isSpending" ? order : "asc"}
+                                                    onClick={createSortHandler("isSpending")}
+                                                >
+                                                    Is spending
+                                                    {orderBy === "isSpending"
+                                                        ? <Box sx={visuallyHidden}>
+                                                            {order === "desc" ? "sorted descending" : "sorted ascending"}
+                                                        </Box>
+                                                        : <React.Fragment />
+                                                    }
+                                                </TableSortLabel>
+                                            </TableCell>
+                                            <TableCell sortDirection={orderBy === "description" ? order : false} >
+                                                <TableSortLabel
+                                                    active={orderBy === "description"}
+                                                    direction={orderBy === "description" ? order : "asc"}
+                                                    onClick={createSortHandler("description")}
+                                                >
+                                                    Description
+                                                    {orderBy === "description"
+                                                        ? <Box sx={visuallyHidden}>
+                                                            {order === "desc" ? "sorted descending" : "sorted ascending"}
+                                                        </Box>
+                                                        : <React.Fragment />
+                                                    }
+                                                </TableSortLabel>
+                                            </TableCell>
+                                            <TableCell />
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {stableSort(userCategories.data, getComparator(order, orderBy))
+                                            .map((row, index) =>
+                                                <TableRow hover tabIndex={-1} key={index} >
+                                                    <TableCell>{row.name}</TableCell>
+                                                    <TableCell align="right">{row.isSpending ? "Yes" : "No"}</TableCell>
+                                                    <TableCell>{row.description}</TableCell>
+                                                    <TableCell>
+                                                        <Stack direction="row">
+                                                            <IconButton
+                                                                sx={{ marginLeft: "auto" }}
+                                                                size="small"
+                                                                onClick={(event) => handleEditCategory(event, row._id, row.name, row.description, row.isSpending)}
+                                                            >
+                                                                <EditIcon />
+                                                            </IconButton>
+                                                            <IconButton
+                                                                size="small"
+                                                                onClick={(event) => handleDeleteCategory(event, row._id, row.name)}
+                                                            >
+                                                                <DeleteIcon />
+                                                            </IconButton>
+                                                        </Stack>
+                                                    </TableCell>
+                                                </TableRow>
+                                            )}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        }
                         <Box sx={{ p: 1, display: "flex", justifyContent: "center" }}>
                             <Button color="inherit" size="large" startIcon={<AddBoxIcon />} onClick={handleAddCategory}>
                                 Add Category
@@ -184,7 +186,7 @@ const Categories = () => {
             </Box>
             <ProTip />
             <Copyright />
-        </Container>
+        </Container >
     );
 }
 

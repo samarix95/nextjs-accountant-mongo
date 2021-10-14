@@ -59,7 +59,6 @@ handler.get(async (req, res) => {
                                         { $eq: ["$year", "$$year"] },
                                         { $eq: ["$month", "$$month"] },
                                         { $eq: ["$isDeleted", false] },
-                                        { $eq: ["$deleteDate", null] },
                                     ]
                                 }
                             }
@@ -179,7 +178,6 @@ handler.post(async (req, res) => {
     const month = d.getMonth() + 1;
     const year = d.getFullYear();
 
-    // Add to balance history
     try {
         // Try to find exist user wallet
         const wallet = await req.db.collection('wallets').findOne({
@@ -211,7 +209,6 @@ handler.post(async (req, res) => {
             month: month,
             year: year,
             isDeleted: false,
-            deleteDate: null,
         });
 
         const balanceExists = existBalance !== null ? true : false;
@@ -230,7 +227,6 @@ handler.post(async (req, res) => {
             month: month,
             year: year,
             isDeleted: false,
-            deleteDate: null,
         });
 
         // Add to balance or update exist
@@ -251,13 +247,11 @@ handler.post(async (req, res) => {
                 month: month,
                 year: year,
                 isDeleted: false,
-                deleteDate: null,
             });
         }
 
         return res.status(200).json({ message: `Category was added successful` });
     } catch (error) {
-        console.log(error)
         return res.status(500).json({ message: new Error(error).message });
     }
 });
@@ -291,8 +285,8 @@ handler.put(async (req, res) => {
     try {
         // Check if balance exists
         const existBalance = await req.db.collection('balances').findOne({
-            userId: userId,
             _id: ObjectId(id),
+            userId: userId,
             isDeleted: false,
         });
 
@@ -341,6 +335,7 @@ handler.put(async (req, res) => {
         const existBalanceWithNewCategory = await req.db.collection('balances').findOne({
             _id: { $ne: ObjectId(id) },
             userId: userId,
+            walletid: existBalance.walletId,
             categoryId: categoryId,
             year: existBalance.year,
             month: existBalance.month,
@@ -356,7 +351,6 @@ handler.put(async (req, res) => {
         // Update exist balance
         await req.db.collection('balances').updateOne({
             _id: ObjectId(id),
-            userId: userId,
         }, {
             $set: {
                 balance: Number(parseFloat(value)),
@@ -401,13 +395,10 @@ handler.put(async (req, res) => {
             month: existBalance.month,
             year: existBalance.year,
             isDeleted: false,
-            deleteDate: null,
         });
 
         return res.status(200).json({ message: `Balance was update successful` });
-
     } catch (error) {
-        console.log(error)
         return res.status(500).json({ message: new Error(error).message });
     }
 });
@@ -429,32 +420,38 @@ handler.delete(async (req, res) => {
     try {
         // Check if balance exists
         const existBalance = await req.db.collection('balances').findOne({
-            userId: userId,
             _id: ObjectId(id),
+            userId: userId,
         });
 
         if (existBalance === null) {
             return res.status(400).json({ message: `Nothing to delete (ID '${categoryId}')` });
         }
 
+        // Delete balance
+        await req.db.collection('balances').updateOne({
+            _id: ObjectId(id),
+        }, {
+            $set: {
+                isDeleted: true,
+            }
+        });
+
         // Delete history
-        await req.db.collection('balances_history').deleteMany({
+        await req.db.collection('balances_history').updateMany({
             userId: userId,
+            walletId: existBalance.walletId,
             categoryId: existBalance.categoryId,
             year: existBalance.year,
             month: existBalance.month,
-        });
-
-        // Delete balance
-        await req.db.collection('balances').deleteOne({
-            userId: userId,
-            _id: ObjectId(id),
+        }, {
+            $set: {
+                isDeleted: true,
+            }
         });
 
         return res.status(200).json({ message: `Balance was deleted` });
-
     } catch (error) {
-        console.log(error)
         return res.status(500).json({ message: new Error(error).message });
     }
 });

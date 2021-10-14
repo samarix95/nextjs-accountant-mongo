@@ -11,6 +11,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Paper from '@mui/material/Paper';
 import Slide from '@mui/material/Slide';
@@ -106,27 +107,29 @@ const EditBudgetHistoryDialog = () => {
             >
                 <DialogTitle>Edit balance history</DialogTitle>
                 <DialogContent>
-                    <Stack spacing={2}>
-                        <Paper sx={{ padding: 2 }}>
-                            <Stack direction="row" justifyContent="space-around" alignItems="center" sx={{ width: "100%", marginBottom: 1 }}>
-                                <Button variant="text" size="small" onClick={(event) => handleChangeData(event, "prev")}>yesterday</Button>
-                                <Button variant="text" size="small" onClick={(event) => handleChangeData(event, "now")}>today</Button>
-                                <Button variant="text" size="small" onClick={(event) => handleChangeData(event, "next")}>tomorrow</Button>
-                            </Stack>
-                            <LocalizationProvider dateAdapter={AdapterDateFns} locale={enLocale}>
-                                <MobileDatePicker
-                                    label="When"
-                                    value={dateValue}
-                                    onChange={(newDateValue) => {
-                                        setDateValue(newDateValue);
-                                    }}
-                                    renderInput={(params) => <TextField fullWidth variant="standard" {...params} />}
-                                />
-                            </LocalizationProvider>
-                        </Paper>
-                        <TextField id="buget-value" variant="standard" label="Value" type="number" value={value} onChange={handleSetNewValue} required />
-                        <TextField id="budget_comment" variant="standard" label="Comment" multiline rows={2} value={comment} onChange={handleSetComment} />
-                    </Stack>
+                    <Box sx={{ p: 1 }}>
+                        <Stack spacing={2}>
+                            <Paper sx={{ padding: 2 }}>
+                                <Stack direction="row" justifyContent="space-around" alignItems="center" sx={{ width: "100%", marginBottom: 1 }}>
+                                    <Button variant="text" size="small" onClick={(event) => handleChangeData(event, "prev")}>yesterday</Button>
+                                    <Button variant="text" size="small" onClick={(event) => handleChangeData(event, "now")}>today</Button>
+                                    <Button variant="text" size="small" onClick={(event) => handleChangeData(event, "next")}>tomorrow</Button>
+                                </Stack>
+                                <LocalizationProvider dateAdapter={AdapterDateFns} locale={enLocale}>
+                                    <MobileDatePicker
+                                        label="When"
+                                        value={dateValue}
+                                        onChange={(newDateValue) => {
+                                            setDateValue(newDateValue);
+                                        }}
+                                        renderInput={(params) => <TextField fullWidth variant="standard" {...params} />}
+                                    />
+                                </LocalizationProvider>
+                            </Paper>
+                            <TextField id="buget-value" variant="standard" label="Value" type="number" value={value} onChange={handleSetNewValue} required />
+                            <TextField id="budget_comment" variant="standard" label="Comment" multiline rows={2} value={comment} onChange={handleSetComment} />
+                        </Stack>
+                    </Box>
                 </DialogContent>
                 <DialogActions>
                     <Button disabled={disableDialogButtons} size="small" variant="text" onClick={handleCloseDialog}>Cancel</Button>
