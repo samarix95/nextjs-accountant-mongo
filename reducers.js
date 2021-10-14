@@ -193,6 +193,7 @@ const deleteBudgetDialogReducer = (state = deleteBudgetDialogState, { type, payl
 // Initial User wallets state
 const initialUserWalletsState = {
     loading: false,
+    selectedId: null,
     data: [],
     error: null,
 }
@@ -217,6 +218,11 @@ const userWalletsReducer = (state = initialUserWalletsState, { type, payload }) 
                 ...state,
                 loading: false,
                 error: payload.error,
+            };
+        case types.SET_SELECTED_WALLET:
+            return {
+                ...state,
+                selectedId: payload.id,
             };
         default:
             return state;

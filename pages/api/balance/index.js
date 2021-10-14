@@ -10,25 +10,36 @@ handler.use(middleware);
 handler.get(async (req, res) => {
     const session = await getSession({ req });
 
+    const { walletId } = req.query;
+
     if (!session) {
         return res.status(401).json({ message: "You're not autorized" });
     }
 
     const userId = session.user.id;
 
+    let mathces = {
+        userId: userId,
+        isDeleted: false,
+    };
+
+    if (typeof walletId !== "undefined") {
+        mathces.walletId = walletId;
+    }
+
     try {
         const balances = await req.db.collection('balances').aggregate([
             {
-                $match: {
-                    userId: userId,
-                    isDeleted: false,
-                }
+                $match: mathces
             },
             {
                 $set: {
                     categoryId: {
                         $toObjectId: "$categoryId",
-                    }
+                    },
+                    walletId: {
+                        $toObjectId: "$walletId",
+                    },
                 },
             },
             {
@@ -81,6 +92,17 @@ handler.get(async (req, res) => {
                 $unwind: "$categoryData"
             },
             {
+                $lookup: {
+                    from: "wallets",
+                    localField: "walletId",
+                    foreignField: "_id",
+                    as: "walletData",
+                }
+            },
+            {
+                $unwind: "$walletData"
+            },
+            {
                 $project: {
                     balance: {
                         $convert: {
@@ -88,11 +110,17 @@ handler.get(async (req, res) => {
                             to: "double"
                         }
                     },
+                    month: 1,
+                    year: 1,
                     balanceHistory: 1,
                     "categoryData.name": 1,
                     "categoryData.description": 1,
                     "categoryData.isSpending": 1,
                     "categoryData._id": 1,
+                    "walletData.name": 1,
+                    "walletData.description": 1,
+                    "walletData.isSpending": 1,
+                    "walletData._id": 1,
                 }
             },
         ]).toArray();
@@ -116,7 +144,7 @@ handler.post(async (req, res) => {
         return res.status(401).json({ message: "You're not autorized" });
     }
 
-    const { date, categoryId, value, comment } = req.body;
+    const { date, walletId, categoryId, value, comment } = req.body;
     const userId = session.user.id;
 
     if (value == 0 || value === "") {
@@ -125,6 +153,10 @@ handler.post(async (req, res) => {
 
     if (value < 0) {
         return res.status(400).json({ message: "Get negative value" });
+    }
+
+    if (walletId === null || walletId === "") {
+        return res.status(400).json({ message: "Wallet id is required" });
     }
 
     if (categoryId === null || categoryId === "") {
@@ -149,6 +181,17 @@ handler.post(async (req, res) => {
 
     // Add to balance history
     try {
+        // Try to find exist user wallet
+        const wallet = await req.db.collection('wallets').findOne({
+            _id: ObjectId(walletId),
+            userId: userId,
+            isDeleted: false,
+        });
+
+        if (wallet === null) {
+            return res.status(400).json({ message: `Wallet not found (ID '${walletId}')` });
+        }
+
         // Try to find exist user categories
         const category = await req.db.collection('categories').findOne({
             _id: ObjectId(categoryId),
@@ -163,6 +206,7 @@ handler.post(async (req, res) => {
         // Look for exist balance history with category
         const existBalance = await req.db.collection('balances').findOne({
             userId: userId,
+            walletId: walletId,
             categoryId: categoryId,
             month: month,
             year: year,
@@ -178,6 +222,7 @@ handler.post(async (req, res) => {
         // Add to balance-history
         await req.db.collection('balances_history').insertOne({
             userId: userId,
+            walletId: walletId,
             categoryId: categoryId,
             value: Number(parseFloat(balanceValue).toFixed(2)),
             comment: comment === null ? '' : comment,
@@ -200,6 +245,7 @@ handler.post(async (req, res) => {
         } else {
             await req.db.collection('balances').insertOne({
                 userId: userId,
+                walletId: walletId,
                 categoryId: categoryId,
                 balance: Number(parseFloat(newBalance).toFixed(2)),
                 month: month,
@@ -223,11 +269,15 @@ handler.put(async (req, res) => {
         return res.status(401).json({ message: "You're not autorized" });
     }
 
-    const { id, categoryId, value } = req.body;
+    const { id, walletId, categoryId, value } = req.body;
     const userId = session.user.id;
 
     if (value == 0 || value === "") {
         return res.status(400).json({ message: "Value is required" });
+    }
+
+    if (walletId === null || walletId === "") {
+        return res.status(400).json({ message: "Wallet id is required" });
     }
 
     if (categoryId === null || categoryId === "") {
@@ -250,11 +300,22 @@ handler.put(async (req, res) => {
             return res.status(400).json({ message: `Balance not found (ID '${categoryId}')` });
         }
 
-        if (existBalance.balance == value && existBalance.categoryId == categoryId) {
+        if (existBalance.balance == value && existBalance.categoryId == categoryId && existBalance.walletId == walletId) {
             return res.status(400).json({ message: `Nothing to update` });
         }
 
-        // Check if get category with the same spending type
+        // Try to find exist user wallet
+        const wallet = await req.db.collection('wallets').findOne({
+            _id: ObjectId(walletId),
+            userId: userId,
+            isDeleted: false,
+        });
+
+        if (wallet === null) {
+            return res.status(400).json({ message: `Wallet not found (ID '${walletId}')` });
+        }
+
+        // Try to find exist category
         const needCategory = await req.db.collection('categories').findOne({
             _id: ObjectId(categoryId),
             userId: userId,
@@ -299,6 +360,7 @@ handler.put(async (req, res) => {
         }, {
             $set: {
                 balance: Number(parseFloat(value)),
+                walletId: walletId,
                 categoryId: categoryId,
             }
         });
@@ -307,6 +369,7 @@ handler.put(async (req, res) => {
         if (existBalance.categoryId !== categoryId) {
             await req.db.collection('balances_history').updateMany({
                 userId: userId,
+                walletId: walletId,
                 categoryId: existBalance.categoryId,
                 year: existBalance.year,
                 month: existBalance.month,
@@ -317,14 +380,23 @@ handler.put(async (req, res) => {
             });
         }
 
+        let histoyComment = "Manual change";
+
+        histoyComment += existBalance.walletId !== walletId
+            ? `. Wallet was changed to '${wallet.name}'`
+            : ""
+
+        histoyComment += existBalance.categoryId !== categoryId
+            ? `. Category was changed from '${haveCategory.name}' to '${needCategory.name}'`
+            : ""
+
         // Add change to history
         await req.db.collection('balances_history').insertOne({
             userId: userId,
+            walletId: walletId,
             categoryId: categoryId,
             value: Number(balanceDiff),
-            comment: existBalance.categoryId !== categoryId
-                ? `Manual change. Category was changed from '${haveCategory.name}' to '${needCategory.name}'`
-                : "Manual change",
+            comment: histoyComment,
             date: new Date(),
             month: existBalance.month,
             year: existBalance.year,

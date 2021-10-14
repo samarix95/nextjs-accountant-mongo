@@ -10,7 +10,7 @@ import Copyright from '../src/Copyright';
 const Settings = () => {
     return (
         <Container>
-            <Box sx={{ my: 4 }}>
+            <Box>
                 <Typography variant="h4" component="h1" gutterBottom>
                     Settings page
                 </Typography>

@@ -1,5 +1,7 @@
 import * as React from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+
+import { setSelectedWallet } from '../actions';
 
 import ProTip from '../src/ProTip';
 import Copyright from '../src/Copyright';
@@ -19,33 +21,87 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import TextField from '@mui/material/TextField';
+
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import DesktopDatePicker from '@mui/lab/DesktopDatePicker';
 
 import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 import RemoveCircleOutlineOutlinedIcon from '@mui/icons-material/RemoveCircleOutlineOutlined';
 
 const Balance = () => {
+    const dispatch = useDispatch();
     const state = useSelector((state) => state);
-    const { userBalances } = state;
+    const { userBalances, userWallets } = state;
 
     const [openAddBudgetDialogData, setOpenAddBudgetDialogData] = React.useState({ openDialog: false, budgetType: '', isSpending: false });
+    const [selectedDate, setSelectedDate] = React.useState(new Date())
+    const selectedMonth = selectedDate.getMonth() + 1;
+    const selectedYear = selectedDate.getFullYear();
 
     const handleOpenAddBudget = (type) => {
         setOpenAddBudgetDialogData({ openDialog: true, budgetType: type, isSpending: type === "outgoing" });
     }
 
+    const handleChangeWallet = (event) => {
+        localStorage.setItem("selectedWalletId", event.target.value);
+        dispatch(setSelectedWallet(event.target.value));
+    }
+
     return (
         <Container>
             <AddBudgetDialog openAddBudgetDialogData={openAddBudgetDialogData} setOpenAddBudgetDialogData={setOpenAddBudgetDialogData} />
-            <Box sx={{ my: 4 }}>
-                <Box sx={{ p: 1, display: 'flex', justifyContent: 'center' }}>
-                    <Stack direction="row" spacing={2}>
-                        <IconButton aria-label="add" color="success" size="large" onClick={() => handleOpenAddBudget("incoming")}>
-                            <AddCircleOutlineOutlinedIcon fontSize="large" />
-                        </IconButton>
-                        <IconButton aria-label="delete" color="error" size="large" onClick={() => handleOpenAddBudget("outgoing")}>
-                            <RemoveCircleOutlineOutlinedIcon fontSize="large" />
-                        </IconButton>
-                    </Stack>
+            <Box>
+                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                    <Paper sx={{ p: 1 }}>
+                        <Stack spacing={1}>
+                            <Stack direction="row" spacing={1}>
+                                <Box sx={{ minWidth: 200 }}>
+                                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                        <DesktopDatePicker
+                                            label="Month and year"
+                                            value={selectedDate}
+                                            views={['month', 'year']}
+                                            minDate={new Date('2011-01-01')}
+                                            maxDate={new Date('2030-01-01')}
+                                            onChange={(newValue) => setSelectedDate(newValue)}
+                                            renderInput={(params) => <TextField {...params} />}
+                                        />
+                                    </LocalizationProvider>
+                                </Box>
+                                {Object.keys(userWallets.data).length > 0 && (
+                                    <FormControl fullWidth>
+                                        <InputLabel id="wallet-simple-select-label">Wallet</InputLabel>
+                                        <Select
+                                            labelId="wallet-simple-select-label"
+                                            id="wallet-simple-select"
+                                            label="Wallet"
+                                            value={userWallets.selectedId === null ? "summary" : userWallets.selectedId}
+                                            onChange={handleChangeWallet}
+                                        >
+                                            <MenuItem value={"summary"}>Summary</MenuItem>
+                                            {userWallets.data.map((item, key) => (
+                                                <MenuItem key={key} value={item._id}>{item.name}</MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+                                )}
+                            </Stack>
+                            <Stack direction="row" spacing={2} justifyContent="center">
+                                <IconButton aria-label="add" color="success" size="large" onClick={() => handleOpenAddBudget("incoming")}>
+                                    <AddCircleOutlineOutlinedIcon fontSize="large" />
+                                </IconButton>
+                                <IconButton aria-label="delete" color="error" size="large" onClick={() => handleOpenAddBudget("outgoing")}>
+                                    <RemoveCircleOutlineOutlinedIcon fontSize="large" />
+                                </IconButton>
+                            </Stack>
+                        </Stack>
+                    </Paper>
                 </Box>
                 {userBalances.loading
                     ? <Stack sx={{ display: 'flex', height: 200, alignItems: 'center', justifyContent: 'center', }}>
@@ -63,15 +119,16 @@ const Balance = () => {
                                         <TableCell>Category</TableCell>
                                         <TableCell>Balance</TableCell>
                                         <TableCell>Category description</TableCell>
+                                        <TableCell>Wallet</TableCell>
                                         <TableCell />
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
                                     {userBalances.data
                                         .sort((a, b) => Number(a.categoryData.isSpending) - Number(b.categoryData.isSpending) || Math.abs(b.balance) - Math.abs(a.balance))
-                                        .map((row, key) => (
-                                            <Row key={key} row={row} />
-                                        ))}
+                                        .filter((item) => item.month === selectedMonth && item.year === selectedYear)
+                                        .map((row, key) => <Row key={key} row={row} />)
+                                    }
                                 </TableBody>
                             </Table>
                         </TableContainer>
@@ -80,7 +137,7 @@ const Balance = () => {
             </Box>
             <ProTip />
             <Copyright />
-        </Container>
+        </Container >
     );
 }
 

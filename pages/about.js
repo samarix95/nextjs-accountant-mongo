@@ -10,7 +10,7 @@ import Copyright from '../src/Copyright';
 const About = () => {
     return (
         <Container maxWidth="sm">
-            <Box sx={{ my: 4 }}>
+            <Box>
                 <Typography variant="h4" component="h1" gutterBottom>
                     About page
                 </Typography>

@@ -13,7 +13,7 @@ import AddCategoryDialog from './dialogs/add/AddCategoryDialog';
 import EditCategoryDialog from './dialogs/edit/EditCategoryDialog';
 import DeleteCategoryDialog from './dialogs/delete/DeleteCategoryDialog';
 import AddWalletDialog from './dialogs/add/AddWalletDialog';
-import { getUserWallets, getUserCategories, getUserBalances } from '../actions';
+import { getUserWallets, getUserCategories, getUserBalances, setSelectedWallet } from '../actions';
 import Link from './Link';
 
 import AppBar from '@mui/material/AppBar';
@@ -81,7 +81,6 @@ const HeaderComponent = (props) => {
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [openPooper, setOpenPooper] = React.useState(false);
-    const [currentWallet, setCurrentWallet] = React.useState('all');
     const [selectedDrawerIndex, setSelectedDrawerIndex] = React.useState(router.pathname);
 
     const handleDrawerToggle = () => {
@@ -98,16 +97,12 @@ const HeaderComponent = (props) => {
     }
 
     const handleChangeWallet = (wallet) => {
-        if (currentWallet !== wallet) {
-            setCurrentWallet(wallet);
+        if (userWallets.selectedId !== wallet) {
+            localStorage.setItem("selectedWalletId", wallet);
+            dispatch(setSelectedWallet(wallet));
             setOpenPooper(false);
-            changeWallet(wallet);
         }
     };
-
-    const changeWallet = (wallet) => {
-        console.log(`Change wallet: ${wallet}`);
-    }
 
     const handleAddWallet = () => {
         setOpenPooper(false);
@@ -119,6 +114,8 @@ const HeaderComponent = (props) => {
     };
 
     React.useEffect(() => {
+        const selectedWalletId = localStorage.getItem("selectedWalletId");
+        dispatch(setSelectedWallet(selectedWalletId));
         dispatch(getUserWallets());
         dispatch(getUserCategories());
         dispatch(getUserBalances());
@@ -223,6 +220,7 @@ const HeaderComponent = (props) => {
     return (
         <React.Fragment>
             <SnackbarComponent />
+            <AddWalletDialog openDialog={openDialog} setOpenDialog={setOpenDialog} />
             {editBudgetDialog.openDialog && <EditBudgetDialog />}
             {deleteBudgetDialog.openDialog && <DeleteBudgetDialog />}
             {editBudgetHistoryDialog.openDialog && <EditBudgetHistoryDialog />}
@@ -230,7 +228,6 @@ const HeaderComponent = (props) => {
             {addCategoryDialog.openDialog && <AddCategoryDialog />}
             {editCategoryDialog.openDialog && <EditCategoryDialog />}
             {deleteCategoryDialog.openDialog && <DeleteCategoryDialog />}
-            <AddWalletDialog openDialog={openDialog} setOpenDialog={setOpenDialog} />
             <Popper transition
                 open={openPooper}
                 anchorEl={anchorEl}
@@ -244,29 +241,23 @@ const HeaderComponent = (props) => {
                             <Paper>
                                 <Container>
                                     <Box sx={{ p: 1 }}>
-                                        {session.user.name &&
-                                            <Typography variant="h6">{session.user.name} </Typography>
-                                        }
+                                        {session.user.name && <Typography variant="h6">{session.user.name} </Typography>}
                                         <Typography variant="body2" gutterBottom>{session.user.email} </Typography>
                                     </Box>
                                     <Divider />
                                     <List component="nav" aria-label="main wallets folders">
                                         {Object.keys(userWallets.data).length > 0
                                             ? <React.Fragment>
-                                                <ListItemButton
-                                                    selected={currentWallet === 'all'}
-                                                    onClick={() => handleChangeWallet('all')}
-                                                >
-                                                    <ListItemIcon>
-                                                        <InboxIcon />
-                                                    </ListItemIcon>
-                                                    <ListItemText primary="Summary" />
-                                                </ListItemButton>
+                                                {Object.keys(userWallets.data).length > 1 && (
+                                                    <ListItemButton selected={userWallets.selectedId === 'summary'} onClick={() => handleChangeWallet('summary')}>
+                                                        <ListItemIcon>
+                                                            <InboxIcon />
+                                                        </ListItemIcon>
+                                                        <ListItemText primary="Summary" />
+                                                    </ListItemButton>
+                                                )}
                                                 {userWallets.data.map((item, key) =>
-                                                    <ListItemButton key={key}
-                                                        selected={currentWallet === item._id}
-                                                        onClick={() => handleChangeWallet(item._id)}
-                                                    >
+                                                    <ListItemButton key={key} selected={userWallets.selectedId === item._id} onClick={() => handleChangeWallet(item._id)}>
                                                         <ListItemIcon>
                                                             <InboxIcon />
                                                         </ListItemIcon>

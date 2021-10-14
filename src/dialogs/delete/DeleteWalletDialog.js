@@ -1,14 +1,16 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { openSnackbar, getUserWallets } from '../../../actions';
+import { openSnackbar, getUserWallets, setSelectedWallet } from '../../../actions';
 
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
 import Slide from '@mui/material/Slide';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -16,6 +18,8 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 const DeleteWalletDialog = (props) => {
+    const state = useSelector((state) => state);
+    const { userWallets } = state;
     const { openDeleteDialogData, setOpenDeleteDialogData } = props;
     const dispatch = useDispatch();
 
@@ -35,6 +39,11 @@ const DeleteWalletDialog = (props) => {
             data: { id: openDeleteDialogData.walletId },
         })
             .then(response => {
+                if (localStorage.getItem("selectedWalletId") == openDeleteDialogData.walletId) {
+                    const newId = Object.keys(userWallets.data).length > 1 ? userWallets.data[1]._id : null;
+                    localStorage.setItem("selectedWalletId", newId);
+                    dispatch(setSelectedWallet(newId));
+                }
                 setDisableDialogButtons(false);
                 dispatch(openSnackbar(true, response.data.message, "success"));
                 setOpenDeleteDialogData({ ...openDeleteDialogData, openDialog: false });
@@ -55,6 +64,11 @@ const DeleteWalletDialog = (props) => {
             aria-describedby="alert-dialog-slide-description"
         >
             <DialogTitle>Do you want to delete wallet "{openDeleteDialogData.walletName}"?</DialogTitle>
+            <DialogContent>
+                <DialogContentText>
+                    Balance and history will be delete
+                </DialogContentText>
+            </DialogContent>
             <DialogActions>
                 <Button disabled={disableDialogButtons} size="small" variant="text" onClick={handleCloseDialog}>Cancel</Button>
                 <Button disabled={disableDialogButtons} size="small" variant="contained" onClick={handleDeleteWallet}>Delete</Button>

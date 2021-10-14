@@ -15,6 +15,10 @@ import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import Paper from '@mui/material/Paper';
 import Slide from '@mui/material/Slide';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import CircularProgress from '@mui/material/CircularProgress';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -35,10 +39,11 @@ const AddBudgetDialog = (props) => {
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
     const state = useSelector((state) => state);
-    const { userCategories } = state;
+    const { userCategories, userWallets } = state;
     const availableCategories = userCategories.data.filter(category => category.isSpending === openAddBudgetDialogData.isSpending);
 
     const [disableDialogButtons, setDisableDialogButtons] = React.useState(false);
+    const [changedWallet, setChangedWallet] = React.useState("");
     const [selectedCategory, setSelectedCategory] = React.useState(null);
     const [dateValue, setDateValue] = React.useState(new Date());
     const [value, setValue] = React.useState(0.0);
@@ -73,6 +78,10 @@ const AddBudgetDialog = (props) => {
         setDateValue(date);
     }
 
+    const handleChangeWallet = (event) => {
+        setChangedWallet(event.target.value);
+    }
+
     const handleSetNewValue = (event) => {
         if (event.target.value >= 0) {
             setValue(event.target.value);
@@ -92,7 +101,7 @@ const AddBudgetDialog = (props) => {
         axios.request({
             method: "post",
             url: "/api/balance",
-            data: { date: dateValue, categoryId: selectedCategory._id, value: value, comment: comment, },
+            data: { date: dateValue, walletId: changedWallet, categoryId: selectedCategory._id, value: value, comment: comment, },
         })
             .then(response => {
                 setDisableDialogButtons(false);
@@ -120,7 +129,7 @@ const AddBudgetDialog = (props) => {
                 <DialogTitle>Add new {openAddBudgetDialogData.budgetType}</DialogTitle>
                 <DialogContent>
                     <Stack spacing={2}>
-                        <Paper sx={{ padding: 2 }}>
+                        <Paper sx={{ padding: 2 }} elevation={2}>
                             <Stack direction="row" justifyContent="space-around" alignItems="center" sx={{ width: "100%", marginBottom: 1 }}>
                                 <Button variant="text" size="small" onClick={(event) => handleChangeData(event, "prev")}>yesterday</Button>
                                 <Button variant="text" size="small" onClick={(event) => handleChangeData(event, "now")}>today</Button>
@@ -128,15 +137,30 @@ const AddBudgetDialog = (props) => {
                             </Stack>
                             <LocalizationProvider dateAdapter={AdapterDateFns} locale={enLocale}>
                                 <MobileDatePicker
-                                    label="When"
+                                    label="When *"
                                     value={dateValue}
                                     onChange={(newDateValue) => {
                                         setDateValue(newDateValue);
                                     }}
-                                    renderInput={(params) => <TextField fullWidth variant="standard" {...params} />}
+                                    renderInput={(params) => <TextField fullWidth {...params} />}
                                 />
                             </LocalizationProvider>
                         </Paper>
+                        <FormControl required>
+                            <InputLabel id="wallet-simple-select-label">Wallet</InputLabel>
+                            <Select
+                                labelId="wallet-simple-select-label"
+                                id="wallet-simple-select"
+                                value={changedWallet}
+                                label="Wallet *"
+                                fullWidth
+                                onChange={handleChangeWallet}
+                            >
+                                {userWallets.data.map((item, key) => (
+                                    <MenuItem key={key} value={item._id}>{item.name}</MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
                         <Autocomplete
                             selectOnFocus
                             clearOnBlur
@@ -186,8 +210,7 @@ const AddBudgetDialog = (props) => {
                                 <TextField
                                     {...params}
                                     required
-                                    variant="standard"
-                                    label="Select category or type name to add new"
+                                    label="Category"
                                     InputProps={{
                                         ...params.InputProps,
                                         endAdornment: (
@@ -200,8 +223,8 @@ const AddBudgetDialog = (props) => {
                                 />
                             )}
                         />
-                        <TextField id="buget-value" variant="standard" label="Value" type="number" value={value} onChange={handleSetNewValue} required />
-                        <TextField id="budget_comment" variant="standard" label="Comment" multiline rows={2} value={comment} onChange={handleSetComment} />
+                        <TextField id="buget-value" label="Value" type="number" value={value} onChange={handleSetNewValue} required />
+                        <TextField id="budget_comment" label="Comment" multiline rows={2} value={comment} onChange={handleSetComment} />
                     </Stack>
                 </DialogContent>
                 <DialogActions>

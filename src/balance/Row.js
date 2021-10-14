@@ -43,7 +43,7 @@ const Row = (props) => {
 
     return (
         <React.Fragment>
-            <TableRow sx={{ '& > *': { borderBottom: 'unset' } }} hover onClick={() => setOpen(!open)}>
+            <TableRow sx={{ '& > *': { borderBottom: 'unset' } }} hover>
                 <TableCell>
                     <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
                         {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
@@ -52,6 +52,7 @@ const Row = (props) => {
                 <TableCell>{row.categoryData.name}</TableCell>
                 <TableCell>{row.balance}</TableCell>
                 <TableCell>{row.categoryData.description}</TableCell>
+                <TableCell>{row.walletData.name}</TableCell>
                 <TableCell>
                     <Stack direction="row">
                         <IconButton sx={{ marginLeft: "auto" }} size="small" onClick={(event) => handleEditBalance(event, row._id)}><EditIcon /></IconButton>

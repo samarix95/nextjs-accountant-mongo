@@ -132,6 +132,28 @@ export const getUserWallets = () => {
     };
 }
 
+export const setSelectedWallet = (id) => {
+    return dispatch => {
+        dispatch(changeWallet(id));
+        dispatch(getBalancePending());
+        axios.request({
+            method: "get",
+            url: "/api/balance" + (id === "summary" ? "" : `?walletId=${id}`),
+        })
+            .then(response => {
+                dispatch(getBalanceSuccess(response.data));
+            })
+            .catch(error => {
+                dispatch(getBalanceError(error));
+            });
+    };
+}
+
+const changeWallet = id => ({
+    type: types.SET_SELECTED_WALLET,
+    payload: { id }
+})
+
 const getWalletPending = () => ({
     type: types.GET_WALLET_PENDING
 })

@@ -12,6 +12,10 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import Slide from '@mui/material/Slide';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import CircularProgress from '@mui/material/CircularProgress';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -28,12 +32,14 @@ const EditBudgetDialog = () => {
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
     const state = useSelector((state) => state);
-    const { userCategories, userBalances, editBudgetDialog } = state;
+    const { userCategories, userBalances, editBudgetDialog, userWallets } = state;
     const balanceData = userBalances.data.find(x => x._id === editBudgetDialog.balanceId);
     const currentCategoryData = userCategories.data.find(x => x._id === balanceData.categoryData._id);
     const availableCategories = userCategories.data.filter(x => x.isSpending === balanceData.categoryData.isSpending);
+    const currentWalletData = userWallets.data.find(x => x._id === balanceData.walletData._id)._id;
 
     const [disableDialogButtons, setDisableDialogButtons] = React.useState(false);
+    const [changedWallet, setChangedWallet] = React.useState(currentWalletData);
     const [selectedCategory, setSelectedCategory] = React.useState(currentCategoryData);
     const [value, setValue] = React.useState(balanceData.balance);
 
@@ -49,6 +55,10 @@ const EditBudgetDialog = () => {
         }
     };
 
+    const handleChangeWallet = (event) => {
+        setChangedWallet(event.target.value);
+    }
+
     const handleSetNewValue = (event) => {
         setValue(event.target.value);
     }
@@ -62,7 +72,7 @@ const EditBudgetDialog = () => {
         axios.request({
             method: "put",
             url: "/api/balance",
-            data: { id: editBudgetDialog.balanceId, categoryId: selectedCategory._id, value: value },
+            data: { id: editBudgetDialog.balanceId, walletId: changedWallet, categoryId: selectedCategory._id, value: value },
         })
             .then(response => {
                 setDisableDialogButtons(false);
@@ -90,6 +100,21 @@ const EditBudgetDialog = () => {
                 <DialogTitle>Edit balance</DialogTitle>
                 <DialogContent>
                     <Stack spacing={2}>
+                        <FormControl required>
+                            <InputLabel id="wallet-simple-select-label">Wallet</InputLabel>
+                            <Select
+                                labelId="wallet-simple-select-label"
+                                id="wallet-simple-select"
+                                value={changedWallet}
+                                label="Wallet *"
+                                fullWidth
+                                onChange={handleChangeWallet}
+                            >
+                                {userWallets.data.map((item, key) => (
+                                    <MenuItem key={key} value={item._id}>{item.name}</MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
                         <Autocomplete
                             selectOnFocus
                             clearOnBlur
