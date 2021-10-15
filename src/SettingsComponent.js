@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { switchMode } from './theme';
+import ThemeContext from "../src/theme/ThemeContext";
 
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -9,17 +9,14 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 
 const SettingsComponent = () => {
-    const [isDarkMode, setIsDarkMode] = React.useState(false);
+    const value = React.useContext(ThemeContext);
+    let { themeSelected } = value.state;
+    let { changeTheme } = value;
 
     const handleSwitchTheme = (event) => {
+        changeTheme(event.target.checked ? "dark" : "light");
         localStorage.setItem("darkModeEnabled", event.target.checked);
-        setIsDarkMode(event.target.checked);
     }
-
-    React.useEffect(() => {
-        const isDarkMode = localStorage.getItem("darkModeEnabled") === "true" ? true : false;
-        setIsDarkMode(isDarkMode);
-    }, []);
 
     return (
         <Box>
@@ -29,7 +26,7 @@ const SettingsComponent = () => {
             <FormControl component="fieldset">
                 <FormControlLabel
                     value="end"
-                    control={<Switch checked={isDarkMode} onChange={handleSwitchTheme} color="primary" />}
+                    control={<Switch checked={themeSelected.palette.mode === "dark"} onChange={handleSwitchTheme} color="primary" />}
                     label="Dark theme"
                     labelPlacement="end"
                 />
