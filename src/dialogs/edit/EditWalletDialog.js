@@ -81,8 +81,6 @@ const EditWalletDialog = (props) => {
                             required
                             id="wallet-name-field"
                             label="Wallet name"
-                            size="small"
-                            variant="standard"
                             onChange={handleChangeNewWalletName}
                         />
                         <TextField
@@ -90,8 +88,6 @@ const EditWalletDialog = (props) => {
                             value={openEditDialogData.walletDescription || ''}
                             id="wallet-description-field"
                             label="Wallet description"
-                            size="small"
-                            variant="standard"
                             onChange={handleChangeNewWalletDescription}
                             multiline
                             rows={2}

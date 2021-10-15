@@ -166,8 +166,7 @@ const EditBudgetDialog = () => {
                                     <TextField
                                         {...params}
                                         required
-                                        variant="standard"
-                                        label="Select category or type name to add new"
+                                        label="Category"
                                         InputProps={{
                                             ...params.InputProps,
                                             endAdornment: (
@@ -183,7 +182,6 @@ const EditBudgetDialog = () => {
                             <TextField
                                 required
                                 id="buget-value"
-                                variant="standard"
                                 label="Balance"
                                 type="number"
                                 value={value}

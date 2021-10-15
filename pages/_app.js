@@ -8,7 +8,7 @@ import theme from '../src/theme';
 import createEmotionCache from '../src/createEmotionCache';
 import { Provider } from 'next-auth/client'
 import { Provider as ReduxProvider } from "react-redux";
-import { useStore } from '../store'
+import { useStore } from '../store';
 
 import HeaderComponent from '../src/HeaderComponent';
 

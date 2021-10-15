@@ -90,8 +90,6 @@ const AddWalletDialog = (props) => {
                             required
                             id="wallet-name-field"
                             label="Wallet name"
-                            size="small"
-                            variant="standard"
                             onChange={handleChangeNewWalletName}
                         />
                         <TextField
@@ -99,8 +97,6 @@ const AddWalletDialog = (props) => {
                             value={newWalletDescription}
                             id="wallet-description-field"
                             label="Wallet description"
-                            size="small"
-                            variant="standard"
                             onChange={handleChangeNewWalletDescription}
                             multiline
                             rows={2}

@@ -103,8 +103,6 @@ const EditCategoryDialog = () => {
                             required
                             id="category-name-field"
                             label="Category name"
-                            size="small"
-                            variant="standard"
                             onChange={handleChangeNewCategoryName}
                         />
                         <TextField
@@ -112,8 +110,6 @@ const EditCategoryDialog = () => {
                             value={newCategoryDescription}
                             id="category-description-field"
                             label="Category description"
-                            size="small"
-                            variant="standard"
                             onChange={handleChangeNewCategoryDescription}
                             multiline
                             rows={2}

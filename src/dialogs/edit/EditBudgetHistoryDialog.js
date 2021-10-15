@@ -117,17 +117,31 @@ const EditBudgetHistoryDialog = () => {
                                 </Stack>
                                 <LocalizationProvider dateAdapter={AdapterDateFns} locale={enLocale}>
                                     <MobileDatePicker
-                                        label="When"
+                                        label="When *"
                                         value={dateValue}
                                         onChange={(newDateValue) => {
                                             setDateValue(newDateValue);
                                         }}
-                                        renderInput={(params) => <TextField fullWidth variant="standard" {...params} />}
+                                        renderInput={(params) => <TextField fullWidth {...params} />}
                                     />
                                 </LocalizationProvider>
                             </Paper>
-                            <TextField id="buget-value" variant="standard" label="Value" type="number" value={value} onChange={handleSetNewValue} required />
-                            <TextField id="budget_comment" variant="standard" label="Comment" multiline rows={2} value={comment} onChange={handleSetComment} />
+                            <TextField
+                                id="buget-value"
+                                label="Value"
+                                type="number"
+                                value={value}
+                                onChange={handleSetNewValue}
+                                required
+                            />
+                            <TextField
+                                id="budget_comment"
+                                label="Comment"
+                                multiline
+                                rows={2}
+                                value={comment}
+                                onChange={handleSetComment}
+                            />
                         </Stack>
                     </Box>
                 </DialogContent>
